@@ -1,0 +1,12 @@
+## Establish file extensions that are unnecessary to include in the git repo:
+
+# Python bytecode compile files:
+*.pyc 
+
+# IPython notebook checkpoint files:
+*.ipynb_checkpoints
+
+# Heavyduty Dataset files
+/Datasets/
+*.h5  #Might need to update this in case frames are stored as hdf5
+*.hdf5
