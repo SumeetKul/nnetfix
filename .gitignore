@@ -10,3 +10,5 @@
 /Datasets/
 *.h5  #Might need to update this in case frames are stored as hdf5
 *.hdf5
+*.xml
+*.txt
