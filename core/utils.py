@@ -8,7 +8,7 @@ import subprocess
 
 
 
-def run_commandline(cl, log_level=20, raise_error=True, return_output=True):
+def run_commandline(cl, log_level=20, raise_error=True, return_output=False):
     """Run a string cmd as a subprocess, check for errors and return output.
 
     Parameters
@@ -21,14 +21,14 @@ def run_commandline(cl, log_level=20, raise_error=True, return_output=True):
 
     """
 
-    logger.log(log_level, 'Now executing: ' + cl)
+#    logger.log(log_level, 'Now executing: ' + cl)
     if return_output:
         try:
             out = subprocess.check_output(
                 cl, stderr=subprocess.STDOUT, shell=True,
                 universal_newlines=True)
         except subprocess.CalledProcessError as e:
-            logger.log(log_level, 'Execution failed: {}'.format(e.output))
+#            logger.log(log_level, 'Execution failed: {}'.format(e.output))
             if raise_error:
                 raise
             else:

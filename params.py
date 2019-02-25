@@ -4,7 +4,7 @@
 
 label = "GW170814"
 ### 1: Trigger Information:
-
+outdir = "test"
 # Interferometer which has a glitch. One of 'H1','L1' or 'V1'.
 IFO = 'H1'
 

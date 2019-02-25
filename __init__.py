@@ -16,7 +16,7 @@ from __future__ import absolute_import
 from . import core, templatebank
 
 from .core import utils, 
-#from .core.sampler import run_sampler
+from .templatebank import gtbank
 #from .core.likelihood import Likelihood
 
 __version__ = utils.get_version_information()
