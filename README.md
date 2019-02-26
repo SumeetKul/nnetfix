@@ -20,7 +20,7 @@ These templates are used to simulate data mimicking data from the affected inter
 
 ### Installation:
 1.  Make a clone of the repository.
-2.  Create a python3 virtual environment using "python3 -m venv ../nnetfix"
+2.  Create a python3 virtual environment using "python3 -m venv nnetfix-py3env"
 3.  Install all the required dependencies using "pip3 install -r requirements.txt"
 
 
