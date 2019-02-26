@@ -1,7 +1,7 @@
 import numpy as np
 import h5py
 import params
-
+import os
 def make_hdf5(txtfile,multiplier=params.multiplier,dur=params.duration,sample_rate=params.sample_rate):
     """
     Generates a blank hdf5 dataset file for storing the trainingset samples having simulated data. 
@@ -11,6 +11,8 @@ def make_hdf5(txtfile,multiplier=params.multiplier,dur=params.duration,sample_ra
     
     multiplier: The number of copies of each template to include in the trainingset. 
     """
+   
+    output_cache_file = os.path.join(params.outdir, txtfile)
 
     n_templates = np.loadtxt(txtfile,delimiter=',').shape[0]
 
@@ -23,6 +25,6 @@ def make_hdf5(txtfile,multiplier=params.multiplier,dur=params.duration,sample_ra
     f.create_dataset("trainingset",(n_samples,signal_nsample_points))
 
     f.close()
-
+    print("hdf5 file successfully generated")
     return output_cache_file
 

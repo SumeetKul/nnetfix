@@ -1,0 +1,14 @@
+future
+dynesty
+corner
+numpy>=1.9
+matplotlib>=2.0
+scipy>=0.16
+pandas
+deepdish
+mock
+h5py
+gwpy
+pycbc
+lalsuite
+

@@ -32,5 +32,6 @@ apx = "IMRPhenomPv2"
 SNR_range = (5,45)
 minimal_match = 0.98
 toa_range = 0.03 #seconds
-
-
+multiplier = 50.0
+duration = 10.0
+sample_rate = 4096
