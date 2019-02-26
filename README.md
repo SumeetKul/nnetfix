@@ -18,7 +18,13 @@ NNETFIX then generates a templatebank of templates taken in the neighbourhood of
 These templates are used to simulate data mimicking data from the affected interferometer (here, H1) with the glitch gated out. 
 
 
+### Installation:
+1.  Make a clone of the repository.
+2.  Create a python3 virtual environment using "python3 -m venv ../nnetfix"
+3.  Install all the required dependencies using "pip3 install -r requirements.txt"
 
-Steps to run the code (in it's present state):
+
+### Steps to run the code (in its present state):
 1.  Edit the params.py configuration file to add the event label, IFO and gpstime, mass ranges and other parameters to simulate data.
 2.  Run 'main.py'. This should generate a templatebank saved as a txt file in the given output directory.
+3.  
