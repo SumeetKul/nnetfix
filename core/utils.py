@@ -39,4 +39,14 @@ def run_commandline(cl, log_level=20, raise_error=True, return_output=False):
         process = subprocess.Popen(cl, shell=True)
         process.communicate()
 
+#def _make_executable(filename, outdir=params.outdir):
 
+#    """ Make scripts executable to run using Condor.
+#    filename: name of the script
+#    """
+
+#    path_to_file = os.path.join(outdir,filename)
+
+#    command = "chmod u+x {}".format(path_to_file)
+
+#    return "Script {} made executable".format(filename)

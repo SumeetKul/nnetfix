@@ -29,9 +29,10 @@ mass2_max = 30.0
 ### 2: Generating the Training set 
 
 apx = "IMRPhenomPv2"
-SNR_range = (5,45)
-minimal_match = 0.98
+snr_range = (5,45)
+minimal_match = 0.99
 toa_range = 0.03 #seconds
-multiplier = 50.0
-duration = 10.0
+multiplier = 50
+duration = 10
 sample_rate = 4096
+f_lower = 35

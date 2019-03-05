@@ -13,7 +13,7 @@ The code is currently hosted at https://git.ligo.org/sumeet.kulkarni/nnetfix.
 
 from __future__ import absolute_import
 
-from . import core, templatebank
+from . import core, trainingset
 
 from .core import utils, 
 from .templatebank import gtbank

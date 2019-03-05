@@ -2,10 +2,13 @@ import numpy as np
 #from .. import params 
 #from ..core import utils
 import subprocess
+import h5py
 #import logger
 import os
 import params
 from core.utils import run_commandline
+
+
 def generate_tbank(label,m1_min,m1_max,m2_min,m2_max,match):
 
     """ Generates a templatebank corresponding to given parameter ranges using pycbc_geom_nonspinbank
@@ -92,21 +95,4 @@ def generate_tbank(label,m1_min,m1_max,m2_min,m2_max,match):
 
 
 
-def _xml_to_txt(filename, label):
-    
-    # Convert xml into txt:
-    xmlfile = filename
-    #xmlfile = os.path.join(params.outdir,xml_filename)
-    cache_file = "templatebank_{}.txt".format(label)
-    output_cache_file = os.path.join(params.outdir,cache_file)
 
-    cl_list = ['ligolw_print ']
-    cl_list.append('{}'.format(xmlfile))
-    cl_list.append('-t sngl_inspiral')
-    cl_list.append('-c mass1')
-    cl_list.append('-c mass2')
-    
-    cl_list.append('> {}'.format(output_cache_file))
-    cl = ' '.join(cl_list)
-    run_commandline(cl)
-    return output_cache_file
