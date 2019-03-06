@@ -19,9 +19,11 @@ These templates are used to simulate data mimicking data from the affected inter
 
 
 ### Installation:
-1.  Make a clone of the repository.
-2.  Create a python3 virtual environment using "python3 -m venv nnetfix-py3env"
-3.  Install all the required dependencies using "pip3 install -r requirements.txt"
+1.  Make a clone of the repository. (You'll need your albert.einstein username and password)
+2.  Create a virtual environment in the parent nnetfix directory:
+    * Python 2.x: "virtualenv nnetfix-pyenv"
+    * Python 3.x: "python3 -m venv nnetfix-py3env"
+3.  Install all the required dependencies using "pip (python 2.x) / pip3 (python3.x) install -r requirements.txt"
 
 
 ### Steps to run the code (in its present state):
