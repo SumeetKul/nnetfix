@@ -56,3 +56,31 @@ def make_hdf5(txtfile, multiplier=params.multiplier, dur=params.duration, sample
 
     f.close()
     print("hdf5 file successfully generated")
+
+def write_condor_submit_file(exec_name,label=params.label, outdir = params.outdir):
+
+    log_dir = "LOG"
+    err_dir = "ERR"
+    out_dir = "OUT"
+
+    run_commandline("mkdir {}".format(os.path.join(outdir,log_dir)))
+    run_commandline("mkdir {}".format(os.path.join(outdir,err_dir)))
+    run_commandline("mkdir {}".format(os.path.join(outdir,out_dir)))
+
+    con_list = ['Universe = vanilla\n']
+    con_list.append('getenv = True\n')
+    con_list.append('Executable = {}\n'.format(os.path.abspath(exec_name)))
+    con_list.append('Arguments  = $(Process)\n')
+    con_list.append('Log = {}/$(Process).log\n'.format(os.path.abspath(os.path.join(outdir,log_dir))))
+    con_list.append('Error = {}/$(Process).err\n'.format(os.path.abspath(os.path.join(outdir,err_dir))))
+    con_list.append('Output = {}$(Process).out\n'.format(os.path.abspath(os.path.join(outdir,out_dir))))
+    con_list.append('Queue {}'.format('2000'))
+
+    con_tent = ''.join(con_list)
+
+    f = open("condor_{}.txt".format(label),'w')
+    f.write(con_tent)
+    f.close()
+
+    run_commandline("mv condor_{0}.txt condor_{0}.sub".format(label))
+
