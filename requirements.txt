@@ -11,4 +11,4 @@ h5py
 gwpy
 pycbc
 lalsuite
-
+htcondor
