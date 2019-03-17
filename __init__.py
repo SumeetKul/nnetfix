@@ -13,11 +13,11 @@ The code is currently hosted at https://git.ligo.org/sumeet.kulkarni/nnetfix.
 
 from __future__ import absolute_import
 
-from . import core, trainingset
+from . import tools, trainingset
 
-from .core import utils, 
+from .tools import utils, 
 from .templatebank import gtbank
-#from .core.likelihood import Likelihood
+
 
 __version__ = utils.get_version_information()
 

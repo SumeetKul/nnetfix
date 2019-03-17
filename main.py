@@ -2,7 +2,7 @@ import numpy as np
 import params
 import trainingset.templatebank as tbank
 import trainingset.trainingset_utils as tsutils
-from core.utils import run_commandline
+from tools.utils import run_commandline
 
 run_commandline("mkdir {}".format(params.outdir))
 print(params.label)

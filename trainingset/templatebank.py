@@ -1,12 +1,10 @@
 import numpy as np
-#from .. import params 
-#from ..core import utils
 import subprocess
 import h5py
 #import logger
 import os
 import params
-from core.utils import run_commandline
+from tools.utils import run_commandline
 
 
 def generate_tbank(label,m1_min,m1_max,m2_min,m2_max,match):

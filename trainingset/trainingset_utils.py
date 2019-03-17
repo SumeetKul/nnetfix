@@ -3,7 +3,7 @@ import h5py
 import params
 import os
 import subprocess
-from core.utils import run_commandline
+from tools.utils import run_commandline
 
 
 def _xml_to_txt(filename, label):
