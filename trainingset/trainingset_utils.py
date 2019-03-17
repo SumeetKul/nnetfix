@@ -50,14 +50,15 @@ def make_hdf5(txtfile, multiplier=params.multiplier, dur=params.duration, sample
     
     hdffilename = "trainingset_{}.hdf5".format(label)
     hdf_file = os.path.join(outdir,hdffilename)
-    f = h5py.File(hdf_file)
+    f = h5py.File(hdf_file,"w")
 
     f.create_dataset("trainingset",(n_samples,signal_nsample_points))
 
     f.close()
     print("hdf5 file successfully generated")
+    return n_templates
 
-def write_condor_submit_file(exec_name,label=params.label, outdir = params.outdir):
+def write_condor_submit_file(exec_name,n_templates,label=params.label, outdir = params.outdir, multiplier = params.multiplier):
 
     log_dir = "LOG"
     err_dir = "ERR"
@@ -73,9 +74,9 @@ def write_condor_submit_file(exec_name,label=params.label, outdir = params.outdi
     con_list.append('Arguments  = $(Process)\n')
     con_list.append('Log = {}/$(Process).log\n'.format(os.path.abspath(os.path.join(outdir,log_dir))))
     con_list.append('Error = {}/$(Process).err\n'.format(os.path.abspath(os.path.join(outdir,err_dir))))
-    con_list.append('Output = {}$(Process).out\n'.format(os.path.abspath(os.path.join(outdir,out_dir))))
-    con_list.append('Queue {}'.format('2000'))
-
+    con_list.append('Output = {}/$(Process).out\n'.format(os.path.abspath(os.path.join(outdir,out_dir))))
+    con_list.append('accounting_group = ligo.dev.o3.detchar.explore.test\n')
+    con_list.append('Queue {}'.format(n_templates*multiplier))
     con_tent = ''.join(con_list)
 
     f = open("condor_{}.txt".format(label),'w')
