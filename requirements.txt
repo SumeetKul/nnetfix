@@ -7,7 +7,7 @@ scipy>=0.16
 pandas
 deepdish
 mock
-h5py
+h5py==2.7.1
 gwpy
 pycbc
 lalsuite

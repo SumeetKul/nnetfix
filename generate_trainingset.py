@@ -92,7 +92,7 @@ waveform = simulate_single_data_segment(mass1,mass2,index)
 
 hdf5_filename = "trainingset_{}.hdf5".format(params.label)
 hdf5_file = os.path.join(params.outdir, hdf5_filename)
-f = h5py.File(hdf5_file)
+f = h5py.File(hdf5_file,'a')
 
 keys = f.keys()
 

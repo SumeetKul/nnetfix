@@ -76,7 +76,7 @@ def write_condor_submit_file(exec_name,n_templates,label=params.label, outdir = 
     con_list.append('Error = {}/$(Process).err\n'.format(os.path.abspath(os.path.join(outdir,err_dir))))
     con_list.append('Output = {}/$(Process).out\n'.format(os.path.abspath(os.path.join(outdir,out_dir))))
     con_list.append('accounting_group = ligo.dev.o3.detchar.explore.test\n')
-    con_list.append('Queue {}'.format(n_templates*multiplier))
+    con_list.append('Queue {}'.format(n_templates))
     con_tent = ''.join(con_list)
 
     f = open("condor_{}.txt".format(label),'w')
