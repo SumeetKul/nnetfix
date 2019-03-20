@@ -14,6 +14,6 @@ txt_filename = tsutils._xml_to_txt(xml_filename,params.label)
 n_templates = tsutils.make_hdf5(txt_filename)
 tsutils.write_condor_submit_file("generate_trainingset.py",n_templates)
 #seg = simulate_single_data_segment(13,7,2)
-#run_commandline("condor_submit condor_{}.sub".format(params.label))
-
+run_commandline("condor_submit condor_{}.sub".format(params.label))
+run_commandline("condor_wait {}/LOG/mainlog.log".format(params.outdir))
 #run_commandline("./generate_trainingset.py 13")
