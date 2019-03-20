@@ -3,6 +3,9 @@ import params
 import trainingset.templatebank as tbank
 import trainingset.trainingset_utils as tsutils
 from tools.utils import run_commandline
+import datetime
+
+print(datetime.datetime.now().time())
 
 run_commandline("mkdir {}".format(params.outdir))
 print(params.label)
@@ -16,4 +19,7 @@ tsutils.write_condor_submit_file("generate_trainingset.py",n_templates)
 #seg = simulate_single_data_segment(13,7,2)
 run_commandline("condor_submit condor_{}.sub".format(params.label))
 run_commandline("condor_wait {}/LOG/mainlog.log".format(params.outdir))
+
+print("training dataset saved")
+print(datetime.datetime.now().time())
 #run_commandline("./generate_trainingset.py 13")

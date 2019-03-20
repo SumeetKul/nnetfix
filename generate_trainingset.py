@@ -38,7 +38,7 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
     for i in range(params.multiplier):
 
 	    snr = np.random.randint(snr_range[0],snr_range[1])
-	    toa = np.around(np.random.uniform(6.96,7.04),3)
+	    toa = np.around(np.random.uniform(6.98,7.02),3)
 
 	    declination = np.random.uniform(-np.pi/2,np.pi/2)
 	    right_ascension = np.random.uniform(0,2*np.pi)
@@ -65,9 +65,13 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
 	    sig = pycbc.filter.sigma(signal,psd=psd, low_frequency_cutoff=f_lower)
 	    fs += signal.cyclic_time_shift(toa) / sig * snr
 
+            dataseg = fs.timeseries()
 
+	    dataseg = highpass(dataseg, 35)
+	    dataseg = lowpass_fir(dataseg,800,512)
 	    # Convert back into time domain:
-	    waveform_arr[i] = fs.to_timeseries()
+	    waveform_arr[i] = dataseg
+            
             print i 
     return waveform_arr
 
