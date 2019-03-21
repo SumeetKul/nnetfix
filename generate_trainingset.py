@@ -65,7 +65,7 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
 	    sig = pycbc.filter.sigma(signal,psd=psd, low_frequency_cutoff=f_lower)
 	    fs += signal.cyclic_time_shift(toa) / sig * snr
 
-            dataseg = fs.timeseries()
+            dataseg = fs.to_timeseries()
 
 	    dataseg = highpass(dataseg, 35)
 	    dataseg = lowpass_fir(dataseg,800,512)
