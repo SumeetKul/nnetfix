@@ -76,11 +76,26 @@ def generate_tbank(label,m1_min,m1_max,m2_min,m2_max,match):
     cl_list.append('--f-low 15')
     cl_list.append('--f-upper 4096')
     cl_list.append('--delta-f 0.1')
-    cl_list.append('--min-match {}'.format(match))
-    cl_list.append('--min-mass1 {}'.format(m1_min))
-    cl_list.append('--max-mass1 {}'.format(m1_max))
-    cl_list.append('--min-mass2 {}'.format(m2_min))
-    cl_list.append('--max-mass2 {}'.format(m2_max))
+    cl_list.append('--min-match {}'.format(match))    # Required
+    cl_list.append('--min-mass1 {}'.format(m1_min))   # Required
+    cl_list.append('--max-mass1 {}'.format(m1_max))   # Required
+    cl_list.append('--min-mass2 {}'.format(m2_min))   # Required
+    cl_list.append('--max-mass2 {}'.format(m2_max))   # Required
+
+    if hasattr(params,"mchirp_min"):
+        cl_list.append('--min-chirp-mass {}'.format(params.mchirp_min))
+    if hasattr(params,"mchirp_max"):
+        cl_list.append('--max-chirp-mass {}'.format(params.mchirp_max))
+    if hasattr(params,"MTotal_min"):
+        cl_list.append('--min-total-mass {}'.format(params.MTotal_min))
+    if hasattr(params,"MTotal_max"):
+        cl_list.append('--max-total-mass {}'.format(params.MTotal_max))
+    if hasattr(params,"eta_min"):
+        cl_list.append('--min-eta {}'.format(params.eta_min))
+    if hasattr(params,"eta_max"):
+        cl_list.append('--max-eta {}'.format(params.eta_max))
+    
+
     cl_list.append('--verbose')
     cl_list.append('--psd-model aLIGOZeroDetHighPower')
     cl_list.append('--output-file {}'.format(output_cache_file))
