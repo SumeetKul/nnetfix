@@ -13,10 +13,8 @@ The code is currently hosted at https://git.ligo.org/sumeet.kulkarni/nnetfix.
 
 from __future__ import absolute_import
 
-from . import tools, trainingset
-
-from .tools import utils, 
-
-
+from . import tools
+from . import trainingset
+from . import params
 
 
