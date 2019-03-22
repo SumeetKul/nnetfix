@@ -1,9 +1,9 @@
 import numpy as np
 import h5py
-import params
+from nnetfix import params
 import os
 import subprocess
-from tools.utils import run_commandline
+from nnetfix.tools.utils import run_commandline
 
 
 def _xml_to_txt(filename, label):

@@ -21,10 +21,10 @@ mass2_max = 30.0
 # Additional Constraints (Optional):
 # Mchirp_min =    #chirp mass
 # Mchirp_max =    
-# MTotal_min =    #total mass
-# MTotal_max = 
-# Eta_min =       #mass ratio
-# Eta_max = 
+MTotal_min = 50   #total mass
+MTotal_max = 60
+#eta_min = 0.25       #mass ratio
+#eta_max = 0.30
 
 ### 2: Generating the Training set 
 
