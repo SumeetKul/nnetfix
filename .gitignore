@@ -9,6 +9,8 @@
 # Virtual Environment:
 nnetfix-py3env/
 pyvenv.cfg
+
+*.version
 # Heavyduty Dataset files
 #/Datasets/
 *.h5  #Might need to update this in case frames are stored as hdf5
