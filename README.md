@@ -24,9 +24,9 @@ These templates are used to simulate data mimicking data from the affected inter
     * Python 2.x: "virtualenv nnetfix-pyenv"
     * Python 3.x: "python3 -m venv nnetfix-py3env"
 3.  Install all the required dependencies using "pip (python 2.x) / pip3 (python3.x) install -r requirements.txt"
-
+4.  Setup: Run "python setup.py install"
 
 ### Steps to run the code (in its present state):
 1.  Edit the params.py configuration file to add the event label, IFO and gpstime, mass ranges and other parameters to simulate data.
-2.  Run 'main.py'. This should generate a templatebank saved as a txt file in the given output directory.
+2.  Run 'main.py'. This should generate a trainingset saved as an hdf5 file stored in the datasets directory. Additionally, the templatebank used to generate the trainingset will be stored as an xml and txt file in the directory named as the given label.
 3.  
