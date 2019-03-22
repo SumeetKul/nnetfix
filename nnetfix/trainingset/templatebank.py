@@ -3,8 +3,8 @@ import subprocess
 import h5py
 #import logger
 import os
-import params
-from tools.utils import run_commandline
+from nnetfix import params
+from nnetfix.tools.utils import run_commandline
 
 
 def generate_tbank(label,m1_min,m1_max,m2_min,m2_max,match):

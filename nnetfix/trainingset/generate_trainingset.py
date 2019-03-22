@@ -3,7 +3,7 @@
 import numpy as np
 import h5py
 import sys,string
-import params
+from nnetfix import params
 import os
 # PyCBC
 from pycbc.waveform import get_td_waveform, get_fd_waveform

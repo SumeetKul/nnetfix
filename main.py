@@ -1,7 +1,7 @@
 import numpy as np
 import params
-import trainingset.templatebank as tbank
-import trainingset.trainingset_utils as tsutils
+import nnetfix.trainingset.templatebank as tbank
+import nnetfix.trainingset.trainingset_utils as tsutils
 from tools.utils import run_commandline
 
 run_commandline("mkdir {}".format(params.outdir))
