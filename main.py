@@ -1,8 +1,8 @@
 import numpy as np
-import params
+from nnetfix import params
 import nnetfix.trainingset.templatebank as tbank
 import nnetfix.trainingset.trainingset_utils as tsutils
-from tools.utils import run_commandline
+from nnetfix.tools.utils import run_commandline
 
 run_commandline("mkdir {}".format(params.outdir))
 print(params.label)
