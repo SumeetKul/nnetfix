@@ -72,7 +72,7 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
 	    # Convert back into time domain:
 	    waveform_arr[i] = dataseg
             
-            print i 
+            #print i 
     return waveform_arr
 
 
@@ -98,7 +98,7 @@ waveform_array = simulate_single_data_segment(mass1,mass2,index)
 
 
 hdf5_filename = "trainingset_{}.hdf5".format(params.label)
-hdf5_file = os.path.join(params.outdir, hdf5_filename)
+hdf5_file = os.path.join(os.path.abspath("datasets/"), hdf5_filename)
 f = h5py.File(hdf5_file,'a')
 
 keys = f.keys()

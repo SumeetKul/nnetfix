@@ -12,11 +12,11 @@ IFO = 'H1'
 gpstime = 1186741861.5 
 
 # Mass Ranges:
-mass1_min = 25.0
-mass1_max = 45.0
+mass1_min = 35.0
+mass1_max = 40.0
 
-mass2_min = 20.0
-mass2_max = 40.0
+mass2_min = 25.0
+mass2_max = 30.0
 
 # Additional Constraints (Optional):
 # Mchirp_min =    #chirp mass
