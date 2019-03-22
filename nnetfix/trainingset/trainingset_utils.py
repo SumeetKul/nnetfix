@@ -49,7 +49,7 @@ def make_hdf5(txtfile, multiplier=params.multiplier, dur=params.duration, sample
     n_samples = n_templates * multiplier
     
     hdffilename = "trainingset_{}.hdf5".format(label)
-    hdf_file = os.path.join(outdir,hdffilename)
+    hdf_file = os.path.join(os.path.abspath('datasets'),hdffilename)
     f = h5py.File(hdf_file,"w")
 
     f.create_dataset("trainingset",(n_samples,signal_nsample_points))
@@ -72,16 +72,18 @@ def write_condor_submit_file(exec_name,n_templates,label=params.label, outdir = 
     con_list.append('getenv = True\n')
     con_list.append('Executable = {}\n'.format(os.path.abspath(exec_name)))
     con_list.append('Arguments  = $(Process)\n')
-    con_list.append('Log = {}/$(Process).log\n'.format(os.path.abspath(os.path.join(outdir,log_dir))))
+    con_list.append('Log = {}/mainlog.log\n'.format(os.path.abspath(os.path.join(outdir,log_dir))))
     con_list.append('Error = {}/$(Process).err\n'.format(os.path.abspath(os.path.join(outdir,err_dir))))
     con_list.append('Output = {}/$(Process).out\n'.format(os.path.abspath(os.path.join(outdir,out_dir))))
     con_list.append('accounting_group = ligo.dev.o3.detchar.explore.test\n')
     con_list.append('Queue {}'.format(n_templates))
     con_tent = ''.join(con_list)
 
-    f = open("condor_{}.txt".format(label),'w')
+    condor_filename = "condor_{}.txt".format(params.label)
+
+    f = open(os.path.join(os.path.abspath('datasets'),condor_filename),'w')
     f.write(con_tent)
     f.close()
 
-    run_commandline("mv condor_{0}.txt condor_{0}.sub".format(label))
+    run_commandline("mv {0}/condor_{1}.txt {0}/condor_{1}.sub".format(os.path.abspath('datasets'),params.label))
 
