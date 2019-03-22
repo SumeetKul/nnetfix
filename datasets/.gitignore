@@ -1,0 +1,7 @@
+# This directory holds hdf5 files containing the training datasets for nnetfix. This directory should be empty in the online repository/version release.
+# The first line (*) tells Git to ignore everything in this directory. The second line tells Git not to ignore the .gitignore file. You can stuff this file into every empty folder you# want added to the repo.
+
+*
+!.gitignore
+
+
