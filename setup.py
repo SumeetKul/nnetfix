@@ -51,7 +51,7 @@ setup(name='nnetfix',
       author_email='sskulkar@go.olemiss..edu',
       license="LICENSE.md",
       version=VERSION,
-      packages=['nnetfix', 'nnetfix.tools', 'nnetfix.trainingset'],
+      packages=['nnetfix', 'nnetfix.tools', 'nnetfix.trainingset','nnetfix.mlp'],
       package_dir={'nnetfix': 'nnetfix'},
       install_requires=[
           'future',

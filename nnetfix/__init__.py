@@ -16,5 +16,5 @@ from __future__ import absolute_import
 from . import tools
 from . import trainingset
 from . import params
-
+from . import mlp
 

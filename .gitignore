@@ -9,6 +9,7 @@
 # Virtual Environment:
 nnetfix-py3env/
 pyvenv.cfg
+nnetfix-pyenv/
 
 *.version
 # Heavyduty Dataset files

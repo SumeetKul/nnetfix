@@ -12,3 +12,5 @@ gwpy
 pycbc
 lalsuite
 htcondor
+scikit-learn
+
