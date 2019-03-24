@@ -39,7 +39,56 @@ def run_commandline(cl, log_level=20, raise_error=True, return_output=False):
         process = subprocess.Popen(cl, shell=True)
         process.communicate()
 
-#def _make_executable(filename, outdir=params.outdir):
+
+## Normalisation of all vectors:
+def normalise(tbank):
+    for i in range(tbank.shape[0]):
+        tbank[i] = tbank[i]/np.linalg.norm(tbank[i])
+    return tbank    
+        
+    
+## Pairwise Inner Products:
+def InnerProduct(R):
+    CD = pdist(R,'cosine')
+    CD = list(1 - CD)
+    m,n = R.shape
+    for i in xrange(0,m):
+        CD.append(np.inner(R[i],R[i]))
+    return CD 
+
+
+## Pairwise Euclidean distances:
+def EuclideanDist(R):
+    ED = pdist(R,'euclidean')
+    return ED
+
+## To normalise individiual vectors:
+def vectornorm(v):
+    v = v/np.linalg.norm(v)
+    return v
+
+
+def load_dataset(hdf5_file):
+    try:
+	f = h5py.File(os.path.join(os.path.abspath('datasets/'),hdf5_file),'r')
+	keys = f.keys()
+	# Load dataset as a numpy array:
+	Main_Training_dataset = f[keys[0]][:]
+
+	#Close hdf5
+	f.close()
+
+	return Main_Training_dataset
+
+    except NameError:
+	print("The Training dataset does not exist as the given hdf5 filename")
+
+
+
+
+
+
+	#def _make_executable(filename, outdir=params.outdir):
 
 #    """ Make scripts executable to run using Condor.
 #    filename: name of the script
