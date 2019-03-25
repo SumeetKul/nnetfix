@@ -10,6 +10,9 @@
 nnetfix-py3env/
 pyvenv.cfg
 nnetfix-pyenv/
+nnetfix.egg-info/
+build/
+dist/
 
 *.version
 # Heavyduty Dataset files
