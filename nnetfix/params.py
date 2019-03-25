@@ -36,3 +36,14 @@ multiplier = 50
 duration = 10
 sample_rate = 4096
 f_lower = 35
+
+
+### 3: Glitch Information:
+
+# GPSTime of the glitch:
+glitch_time = 1186741861.1
+
+# Duration of the glitch (seconds):
+glitch_dur = 0.125
+
+
