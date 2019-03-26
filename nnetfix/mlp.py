@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPRegressor
 import scipy.signal
 import params
+import os
 
 def scale_data(TrainingData):
 
@@ -118,19 +119,20 @@ def NNetfit(X_train,y_train,hidden_layer_sizes=(200,)):
     nnetfix_model = MLPRegressor(hidden_layer_sizes=hidden_layer_sizes,verbose=True)
     nnetfix_model.fit(X_train,y_train)
 
+    print(nnetfix_model.score(X_train,y_train))
+
     return nnetfix_model
 
 
 
-def NNetevaluate(nnetfix_model, X_train, X_test, y_train, y_test):
+def NNetfix(nnetfix_model, X_test, y_test):
 
     """
+    The M.O.A.F.
     """
 
-    NNet_prediction = mymodel.predict(X_test)
+    NNet_prediction = nnetfix_model.predict(X_test)
 
-    print(nnetfix_model.score(X_test,y_test))
-    print(nnetfix_model.score(X_train,y_train))
 
     return NNet_prediction
 
@@ -196,3 +198,46 @@ def process_dataframe(data_array, scaler, n_samples=glitch_params['n_samples']):
     y_testglitch = y_testglitch_full
 
     return X_testdata, y_testglitch
+
+
+
+def reconstruct_frame(NNet_prediction, X_test_full, y_test, glitch_t = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur'], n_samples = glitch_params['n_samples']):
+
+    """
+    """
+
+    invgate = scipy.signal.tukey(glitch_dur,alpha=params.alpha)
+    test_prediction = invgate*NNet_prediction
+
+    # ### 'Fill in the gaps' of the X-data:
+    PredictX = np.copy(X_test_full)
+    PredictX[:,glitch_t:(glitch_t+glitch_dur)] = PredictX[:, glitch_t:(glitch_t+glitch_dur)] + test_prediction
+    PredictData = PredictX
+    #PredictData = predict_Lreg 
+
+    # # ### FOR REFERENCE: Recover the actual data segments from the testing set:
+    ActualX = np.copy(X_test_full)
+    ActualX[:,glitch_t:(glitch_t+glitch_dur)] = ActualX[:,glitch_t:(glitch_t+glitch_dur)]+(invgate*y_test)
+    OriginalData = ActualX
+
+    ### Finally, we create an array of the cut (X) data set:
+    CutData = X_test_full
+
+
+    gate_y = np.pad(invgate,(glitch_t,(n_samples - glitch_t - glitch_dur)),'constant')
+    gate = 1.0-gate_y
+
+    OriginalData = scaler.inverse_transform(testdata_transform.reshape(1,-1))
+    OriginalData = OriginalData.reshape(-1)
+
+    CutData = scaler.inverse_transform(CutData.reshape(1,-1))
+    CutData = CutData.reshape(-1)
+    CutData = gate*CutData
+
+    PredictData = scaler.inverse_transform(PredictData.reshape(1,-1))
+    PredictData = PredictData.reshape(-1)
+
+
+    return OriginalData, CutData, PredictData
+
+
