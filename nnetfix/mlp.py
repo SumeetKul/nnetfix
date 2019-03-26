@@ -48,7 +48,7 @@ def _get_glitch_parameters(TrainingData, glitch_dur = params.glitch_dur, sample_
     glitch_params = dict()
     
     glitch_params['glitch_dur'] = int(glitch_dur * sample_rate)
-    glitch_params['n_samples'] = n_samples = TrainingData.shape[-1] # Number of sample points
+    glitch_params['n_samples'] = TrainingData.shape[-1] # Number of sample points
     glitch_params['tg'] = None
 
     return glitch_params
@@ -159,3 +159,40 @@ def reconstruct_testing_set(NNet_prediction, X_test_full, y_test, glitch_t = gli
     CutData = X_test_full 
 
     return OriginalData, CutData, PredictData
+
+
+
+
+def process_dataframe(data_array, scaler, n_samples=glitch_params['n_samples']):
+
+    """
+    """
+
+    data_array = np.load(os.path.join(outdir,frame_name)
+    
+    data_array_reshape = data_array.reshape(1,n_samples)
+    data_array_transform = scaler.transform(data_array_reshape)
+
+    tuck = scipy.signal.tukey(l,alpha=alpha)
+    gate_y = np.pad(tuck,(tg,(n_samples - tg - l)),'constant')
+    gate = 1.0-gate_y
+
+    #ML_data_glitch = np.copy(ML_data)
+    testdata_glitch = gate*testdata_transform
+
+    X_testdata_full = testdata_glitch
+    # Check of the padding has been done right:
+    X_testdata_full.shape
+
+    ML_testdata_y = np.copy(testdata_transform)
+    y_testglitch_full = ML_testdata_y[:,tg:tg+l]
+    y_testglitch_full = tuck*y_testglitch_full
+    
+    start_cut_dur = 5.5 #second(s)
+    end_cut_dur = 2.5 # second(s)
+
+    X_testdata = X_testdata_full[:,int(start_cut_dur*sample_rate):-int(end_cut_dur*sample_rate)]
+
+    y_testglitch = y_testglitch_full
+
+    return X_testdata, y_testglitch
