@@ -67,8 +67,8 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
 
             dataseg = fs.to_timeseries()
 
-	    dataseg = highpass(dataseg, 35)
-	    dataseg = lowpass_fir(dataseg,800,512)
+	    highpass(dataseg, 35)
+	    lowpass_fir(dataseg,800,512)
 	    # Convert back into time domain:
 	    waveform_arr[i] = dataseg
             
