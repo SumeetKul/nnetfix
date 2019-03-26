@@ -66,9 +66,96 @@ def prepare_X_data(TrainingData,glitch_params):
     gate = 1.0-gate_y
 
    
-    X_template = gate*TrainingData
+    X_data = gate*TrainingData
 
 
-    return X_template
+    return X_data
 
 
+
+def prepare_Y_data(TrainingData,glitch_params):
+
+    """ Prepares the samples used as the Y-(or prediction)-trainingset. These represent the data that's supposed to be in the gated portion i.e. the actual part of the signal that is affected by the glitch. The number of sample points for this should be equal to the size of the glitch times the sample rate.
+    """
+
+    y_glitch = TrainingData[:,glitch_params['tg']:glitch_params['tg']+glitch_params['glitch_dur']]
+    y_glitch = tuck*y_glitch
+
+    y_glitch[:params.noise_samples] = np.zeros(glitch_params['glitch_dur'])
+
+    return y_glitch
+
+
+
+def split_trainingset(X_data, y_glitch, split_fraction=0.3):
+
+    """ 
+    This function performs 2 operations:
+        (a) Splits the trainingsets into training and testing set based on the given fraction. Defaults to a 0.7-0.3 split.
+        (b) Picks out an window of time around the trigger to narrow the size of the trainingset samples. ** Currently this is hard-coded as 2 seconds, which covers most of the BBH           signals over 30 Hz.     
+    """
+
+    X_train_full, X_test_full, y_train_full, y_test_full = train_test_split(X_template,y_glitch,test_size = test_fraction)
+
+    start_cut_dur = 5.5 #second(s)
+    end_cut_dur = 2.5 # second(s)
+
+    X_train = X_train_full[:,int(start_cut_dur*sample_rate):-int(end_cut_dur*sample_rate)]
+    X_test = X_test_full[:,int(start_cut_dur*sample_rate):-int(end_cut_dur*sample_rate)]
+    y_train = y_train_full
+    y_test = y_test_full
+
+    return X_train, X_test, X_train_full, X_test_full, y_train, y_test
+
+
+
+
+def NNetfit(X_train,y_train,hidden_layer_sizes=(200,)):
+
+    """
+    """
+
+    nnetfix_model = MLPRegressor(hidden_layer_sizes=hidden_layer_sizes,verbose=True)
+    nnetfix_model.fit(X_train,y_train)
+
+    return nnetfix_model
+
+
+
+def NNetevaluate(nnetfix_model, X_train, X_test, y_train, y_test):
+
+    """
+    """
+
+    NNet_prediction = mymodel.predict(X_test)
+
+    print(nnetfix_model.score(X_test,y_test))
+    print(nnetfix_model.score(X_train,y_train))
+
+    return NNet_prediction
+
+
+
+def reconstruct_testing_set(NNet_prediction, X_test_full, y_test, glitch_t = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur']):
+
+    """
+    """
+
+    invgate = scipy.signal.tukey(glitch_dur,alpha=params.alpha)
+    test_prediction = invgate*NNet_prediction
+
+    # ### 'Fill in the gaps' of the X-data:
+    PredictX = np.copy(X_test_full)
+    PredictX[:,glitch_t:(glitch_t+glitch_dur)] = PredictX[:, glitch_t:(glitch_t+glitch_dur)] + test_prediction
+    PredictData = PredictX
+    #PredictData = predict_Lreg 
+  
+    # # ### FOR REFERENCE: Recover the actual data segments from the testing set:
+    ActualX = np.copy(X_test_full)
+    ActualX[:,glitch_t:(glitch_t+glitch_dur)] = ActualX[:,glitch_t:(glitch_t+glitch_dur)]+(invgate*y_test)
+    OriginalData = ActualX
+
+    ### Finally, we create an array of the cut (X) data set:
+    CutData = X_test_full 
+
+    return OriginalData, CutData, PredictData
