@@ -48,3 +48,6 @@ glitch_dur = 0.125
 
 # Alpha used for the gating:
 alpha = 0.1
+
+# Number of pure noise samples to use:
+noise_samples = 2000

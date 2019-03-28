@@ -63,7 +63,7 @@ glitch_params['tg'] = int(7.0*params.sample_rate) - int((params.gpstime-params.g
 
 
 
-def prepare_X_data(TrainingData, tg=glitch_params['tg'] , glitch_dur = glitch_params['glitch_dur']):
+def prepare_X_data(TrainingData, tg=glitch_params['tg'] , glitch_dur = glitch_params['glitch_dur'], alpha=params.alpha):
     
     """ Prepares the samples used as the X-trainingset. These sample waveforms have a gating at the place where the glitch occurs. The size, duration, time of the gating is defined according to the parameters file. The alpha-roll off of the Tukey window used for gating is also defined in params.py 
 
@@ -72,7 +72,7 @@ def prepare_X_data(TrainingData, tg=glitch_params['tg'] , glitch_dur = glitch_pa
     n_samples = TrainingData.shape[-1]
 
     tuck = scipy.signal.tukey(int(params.glitch_dur*params.sample_rate),alpha=alpha)
-    gate_y = np.pad(tuck,(params.glitch_t,(n_samples - params.glitch_t - params_glitch)),'constant')
+    gate_y = np.pad(tuck,(tg,(n_samples - tg - glitch_dur)),'constant')
     gate = 1.0-gate_y
 
    
@@ -84,11 +84,12 @@ def prepare_X_data(TrainingData, tg=glitch_params['tg'] , glitch_dur = glitch_pa
 
 
 
-def prepare_Y_data(TrainingData, tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur']):
+def prepare_Y_data(TrainingData, tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur'], alpha = params.alpha):
 
     """ Prepares the samples used as the Y-(or prediction)-trainingset. These represent the data that's supposed to be in the gated portion i.e. the actual part of the signal that is affected by the glitch. The number of sample points for this should be equal to the size of the glitch times the sample rate.
     """
 
+    tuck = scipy.signal.tukey(int(params.glitch_dur*params.sample_rate),alpha=alpha)
     y_glitch = TrainingData[:, tg:(tg+glitch_dur)]
     y_glitch = tuck*y_glitch
 
@@ -98,7 +99,7 @@ def prepare_Y_data(TrainingData, tg = glitch_params['tg'], glitch_dur = glitch_p
 
 
 
-def split_trainingset(X_data, y_glitch, split_fraction=0.3):
+def split_trainingset(X_data, y_glitch, split_fraction=0.3, sample_rate = params.sample_rate):
 
     """ 
     This function performs 2 operations:
@@ -106,7 +107,7 @@ def split_trainingset(X_data, y_glitch, split_fraction=0.3):
         (b) Picks out an window of time around the trigger to narrow the size of the trainingset samples. ** Currently this is hard-coded as 2 seconds, which covers most of the BBH           signals over 30 Hz.     
     """
 
-    X_train_full, X_test_full, y_train_full, y_test_full = train_test_split(X_template,y_glitch,test_size = test_fraction)
+    X_train_full, X_test_full, y_train_full, y_test_full = train_test_split(X_data,y_glitch,test_size = split_fraction)
 
     start_cut_dur = 5.5 #second(s)
     end_cut_dur = 2.5 # second(s)
@@ -148,12 +149,12 @@ def NNetfix(nnetfix_model, X_test, y_test):
 
 
 
-def reconstruct_testing_set(NNet_prediction, X_test_full, y_test, tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur']):
+def reconstruct_testing_set(NNet_prediction, X_test_full, y_test, tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur'], alpha=params.alpha):
 
     """
     """
 
-    invgate = scipy.signal.tukey(glitch_dur,alpha=params.alpha)
+    invgate = scipy.signal.tukey(glitch_dur,alpha=alpha)
     test_prediction = invgate*NNet_prediction
 
     # ### 'Fill in the gaps' of the X-data:
