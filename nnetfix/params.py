@@ -41,9 +41,10 @@ f_lower = 35
 ### 3: Glitch Information:
 
 # GPSTime of the glitch:
-glitch_time = 1186741861.1
+glitch_t = 1186741861.1
 
 # Duration of the glitch (seconds):
 glitch_dur = 0.125
 
-
+# Alpha used for the gating:
+alpha = 0.1

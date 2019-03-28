@@ -10,6 +10,8 @@ import scipy.signal
 import params
 import os
 
+
+
 def scale_data(TrainingData):
 
     """
@@ -42,47 +44,55 @@ def scale_data(TrainingData):
 
     return ML_data, scaler
 
-
-def _get_glitch_parameters(TrainingData, glitch_dur = params.glitch_dur, sample_rate = params.sample_rate):
-    """ Keeps a record of the global parameters used for defining the glitch-gating in the data arrays (Derived from the params file and dimensions of the Trainingset) """
-
-    glitch_params = dict()
-    
-    glitch_params['glitch_dur'] = int(glitch_dur * sample_rate)
-    glitch_params['n_samples'] = TrainingData.shape[-1] # Number of sample points
-    glitch_params['tg'] = None
-
-    return glitch_params
+glitch_params = dict()
+glitch_params['glitch_dur'] = int(params.glitch_dur * params.sample_rate)
+glitch_params['tg'] = int(7.0*params.sample_rate) - int((params.gpstime-params.glitch_t)*params.sample_rate)
+#glitch_params['glitch_len'] = 
 
 
+#def _get_glitch_parameters(TrainingData, glitch_dur = params.glitch_dur, sample_rate = params.sample_rate, glitch_t = params.glitch_time):
+#    """ Keeps a record of the global parameters used for defining the glitch-gating in the data arrays (Derived from the params file and dimensions of the Trainingset) """
+#
+#    glitch_params = dict()
+#    
+#    glitch_params['glitch_dur'] = int(glitch_dur * sample_rate)
+#    glitch_params['n_samples'] = TrainingData.shape[-1] # Number of sample points
+#    glitch_params['glitch_t'] = glitch_t
+#
+#    return glitch_params
 
-def prepare_X_data(TrainingData,glitch_params):
+
+
+def prepare_X_data(TrainingData, tg=glitch_params['tg'] , glitch_dur = glitch_params['glitch_dur']):
     
     """ Prepares the samples used as the X-trainingset. These sample waveforms have a gating at the place where the glitch occurs. The size, duration, time of the gating is defined according to the parameters file. The alpha-roll off of the Tukey window used for gating is also defined in params.py 
 
     """
+    
+    n_samples = TrainingData.shape[-1]
 
-    tuck = scipy.signal.tukey(glitch_params['glitch_dur'],alpha=alpha)
-    gate_y = np.pad(tuck,(tg,(glitch_params['n_samples'] - tg - glitch_params['glitch_dur'])),'constant')
+    tuck = scipy.signal.tukey(int(params.glitch_dur*params.sample_rate),alpha=alpha)
+    gate_y = np.pad(tuck,(params.glitch_t,(n_samples - params.glitch_t - params_glitch)),'constant')
     gate = 1.0-gate_y
 
    
     X_data = gate*TrainingData
 
 
-    return X_data
+    return X_data, n_samples
 
 
 
-def prepare_Y_data(TrainingData,glitch_params):
+
+def prepare_Y_data(TrainingData, tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur']):
 
     """ Prepares the samples used as the Y-(or prediction)-trainingset. These represent the data that's supposed to be in the gated portion i.e. the actual part of the signal that is affected by the glitch. The number of sample points for this should be equal to the size of the glitch times the sample rate.
     """
 
-    y_glitch = TrainingData[:,glitch_params['tg']:glitch_params['tg']+glitch_params['glitch_dur']]
+    y_glitch = TrainingData[:, tg:(tg+glitch_dur)]
     y_glitch = tuck*y_glitch
 
-    y_glitch[:params.noise_samples] = np.zeros(glitch_params['glitch_dur'])
+    y_glitch[:params.noise_samples] = np.zeros(glitch_dur)
 
     return y_glitch
 
@@ -138,7 +148,7 @@ def NNetfix(nnetfix_model, X_test, y_test):
 
 
 
-def reconstruct_testing_set(NNet_prediction, X_test_full, y_test, glitch_t = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur']):
+def reconstruct_testing_set(NNet_prediction, X_test_full, y_test, tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur']):
 
     """
     """
@@ -148,13 +158,13 @@ def reconstruct_testing_set(NNet_prediction, X_test_full, y_test, glitch_t = gli
 
     # ### 'Fill in the gaps' of the X-data:
     PredictX = np.copy(X_test_full)
-    PredictX[:,glitch_t:(glitch_t+glitch_dur)] = PredictX[:, glitch_t:(glitch_t+glitch_dur)] + test_prediction
+    PredictX[:,tg:(tg+glitch_dur)] = PredictX[:, tg:(tg+glitch_dur)] + test_prediction
     PredictData = PredictX
     #PredictData = predict_Lreg 
   
     # # ### FOR REFERENCE: Recover the actual data segments from the testing set:
     ActualX = np.copy(X_test_full)
-    ActualX[:,glitch_t:(glitch_t+glitch_dur)] = ActualX[:,glitch_t:(glitch_t+glitch_dur)]+(invgate*y_test)
+    ActualX[:,tg:(tg+glitch_dur)] = ActualX[:,tg:(tg+glitch_dur)]+(invgate*y_test)
     OriginalData = ActualX
 
     ### Finally, we create an array of the cut (X) data set:
@@ -165,18 +175,18 @@ def reconstruct_testing_set(NNet_prediction, X_test_full, y_test, glitch_t = gli
 
 
 
-def process_dataframe(data_array, scaler, n_samples=glitch_params['n_samples']):
+def process_dataframe(data_array, scaler, n_samples, tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur'], alpha = params.alpha):
 
     """
     """
 
-    data_array = np.load(os.path.join(outdir,frame_name)
+    data_array = np.load(os.path.join(outdir,frame_name))
     
     data_array_reshape = data_array.reshape(1,n_samples)
     data_array_transform = scaler.transform(data_array_reshape)
 
-    tuck = scipy.signal.tukey(l,alpha=alpha)
-    gate_y = np.pad(tuck,(tg,(n_samples - tg - l)),'constant')
+    tuck = scipy.signal.tukey(glitch_dur,alpha=alpha)
+    gate_y = np.pad(tuck,(tg,(n_samples - tg - glitch_dur)),'constant')
     gate = 1.0-gate_y
 
     #ML_data_glitch = np.copy(ML_data)
@@ -187,7 +197,7 @@ def process_dataframe(data_array, scaler, n_samples=glitch_params['n_samples']):
     X_testdata_full.shape
 
     ML_testdata_y = np.copy(testdata_transform)
-    y_testglitch_full = ML_testdata_y[:,tg:tg+l]
+    y_testglitch_full = ML_testdata_y[:,tg:tg+glitch_dur]
     y_testglitch_full = tuck*y_testglitch_full
     
     start_cut_dur = 5.5 #second(s)
@@ -201,7 +211,7 @@ def process_dataframe(data_array, scaler, n_samples=glitch_params['n_samples']):
 
 
 
-def reconstruct_frame(NNet_prediction, X_test_full, y_test, glitch_t = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur'], n_samples = glitch_params['n_samples']):
+def reconstruct_frame(NNet_prediction, X_test_full, y_test, n_samples, tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur']):
 
     """
     """
