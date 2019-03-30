@@ -3,6 +3,7 @@ from nnetfix import params
 import nnetfix.trainingset.templatebank as tbank
 import nnetfix.trainingset.trainingset_utils as tsutils
 from nnetfix.tools.utils import run_commandline
+from nnetfix import mlp
 import os 
 import datetime
 
@@ -22,5 +23,35 @@ run_commandline("condor_submit {0}/condor_{1}.sub".format(os.path.abspath('datas
 run_commandline("condor_wait {}/LOG/mainlog.log".format(params.outdir))
 
 print("training dataset saved")
+
+
+f = h5py.File(os.path.join(os.path.abspath("datasets/"),"trainingset_{}.hdf5".format(params.label),'r'))
+
+keys = f.keys()
+Training_dataset = f[keys[0]][:]
+
+ML_data, scaler = mlp.scale_data(Training_dataset)
+
+f.close()
+
+Xdata, n_samples = mlp.prepare_X_data(ML_data)
+
+print("X_data loaded")
+#print Xdata
+
+y_glitch = mlp.prepare_Y_data(ML_data)
+print("y-data created")
+#print y_glitch
+
+X_train, X_test, X_train_full, X_test_full, y_train, y_test = mlp.split_trainingset(Xdata, y_glitch)
+
+print("data split")
+
+nnetmodel = mlp.NNetfit(X_train, y_train)
+
+print("model trained. GREAT SUCCESS!")
+
+
+
 print(datetime.datetime.now().time())
 #run_commandline("./generate_trainingset.py 13")
