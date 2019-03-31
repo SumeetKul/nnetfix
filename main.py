@@ -11,6 +11,7 @@ import pickle
 
 print(datetime.datetime.now().time())
 run_commandline("mkdir {}".format(params.outdir))
+run_commandline("mkdir models/{}".format(params.label))
 print(params.label)
 
 xml_filename = tbank.generate_tbank(params.label,params.mass1_min,params.mass1_max,params.mass2_min,params.mass2_max,params.minimal_match)
@@ -55,12 +56,12 @@ print("model trained. GREAT SUCCESS!")
 # # SAVE ML_model using pickle
 
 pkl_filename = "model_{}.pkl".format(params.label)
-with open(os.path.join(params.outdir,pkl_filename), 'wb') as file:
+with open(os.path.join(os.path.abspath('models/{}'.format(params.label)),pkl_filename), 'wb') as file:
      pickle.dump(nnetmodel, file)
      print("model saved successfully")
 
 scaler_filename = "scaler_{}.pkl".format(params.label)
-with open(os.path.join(params.outdir,scaler_filename), 'wb') as file:
+with open(os.path.join(os.path.abspath('models/{}'.format(params.label)),scaler_filename), 'wb') as file:
      pickle.dump(scaler, file)
      print("scaler saved successfully")
 
