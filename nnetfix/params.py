@@ -37,6 +37,9 @@ duration = 10
 sample_rate = 4096
 f_lower = 35
 
+# Fraction of Trainingset to be comprised of pure noise samples:
+noise_fraction = 0.15
+
 
 ### 3: Glitch Information:
 
@@ -50,4 +53,4 @@ glitch_dur = 0.125
 alpha = 0.1
 
 # Number of pure noise samples to use:
-noise_samples = 2000
+#noise_samples = 2000

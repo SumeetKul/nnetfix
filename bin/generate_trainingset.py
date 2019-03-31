@@ -22,58 +22,81 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
     waveform_arr = np.zeros((params.multiplier,int(sample_rate*dur)))
 #    for i in range(params.multiplier):
 
-    detector = Detector('{}'.format(IFO))
-    coa_phase = np.random.uniform(-np.pi/2,np.pi/2)
+#    detector = Detector('{}'.format(IFO))
+#    coa_phase = np.random.uniform(-np.pi/2,np.pi/2)
 
-    hp, hc = get_td_waveform(approximant=apx,
-			 mass1=m1,
-			 mass2=m2,
-			 coa_phase=coa_phase,
-			 delta_t=1.0/sample_rate,
-			 f_lower=f_lower)
+#    hp, hc = get_td_waveform(approximant=apx,
+#			 mass1=m1,
+#			 mass2=m2,
+#			 coa_phase=coa_phase,
+#			 delta_t=1.0/sample_rate,
+#			 f_lower=f_lower)
 
-    hp.start_time += end_time
-    hc.start_time += end_time
+#    hp.start_time += end_time
+#    hc.start_time += end_time
 
     for i in range(params.multiplier):
 
-	    snr = np.random.randint(snr_range[0],snr_range[1])
-	    toa = np.around(np.random.uniform(6.98,7.02),3)
+	if m1 == 0.0 and m2 == 0.0:
 
-	    declination = np.random.uniform(-np.pi/2,np.pi/2)
-	    right_ascension = np.random.uniform(0,2*np.pi)
-	    polarization = np.random.uniform(0,2*np.pi)
+		# Generate noise from the aLIGO PSD:
+		psd = pycbc.psd.aLIGOZeroDetLowPower(dur * int(sample_rate)  + 1, 1.0/dur, dur)
+
+		ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(20000,50000), low_frequency_cutoff=15)
+		ts = resample_to_delta_t(ts, 1.0/sample_rate)
+		highpass(ts, 35)
+		lowpass_fir(ts,800,512)
+		waveform_arr[i] = ts
+
+	else:
+		detector = Detector('{}'.format(IFO))
+    		coa_phase = np.random.uniform(-np.pi/2,np.pi/2)
+
+    		hp, hc = get_td_waveform(approximant=apx,
+                         mass1=m1,
+                         mass2=m2,
+                         coa_phase=coa_phase,
+                         delta_t=1.0/sample_rate,
+                         f_lower=f_lower)
+
+    		hp.start_time += end_time
+    		hc.start_time += end_time
+
+	        snr = np.random.randint(snr_range[0],snr_range[1])
+	        toa = np.around(np.random.uniform(6.98,7.02),3)
+
+	        declination = np.random.uniform(-np.pi/2,np.pi/2)
+	        right_ascension = np.random.uniform(0,2*np.pi)
+	        polarization = np.random.uniform(0,2*np.pi)
 
 	  
-	    signal = detector.project_wave(hp, hc, right_ascension, declination, polarization)
-	    # Prepend zeros to make the total duration equal to the defined duration:
-	    signal.prepend_zeros(int(signal.sample_rate*(dur-signal.duration)))
+	        signal = detector.project_wave(hp, hc, right_ascension, declination, polarization)
+	        # Prepend zeros to make the total duration equal to the defined duration:
+	        signal.prepend_zeros(int(signal.sample_rate*(dur-signal.duration)))
 
-	    # Add noise:
-	    psd = pycbc.psd.aLIGOZeroDetLowPower(dur * sample_rate + 1, 1.0/dur, f_lower)
+	        # Add noise:
+	        psd = pycbc.psd.aLIGOZeroDetLowPower(dur * sample_rate + 1, 1.0/dur, f_lower)
 
-	    ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=index, low_frequency_cutoff=30)
-	    ts = resample_to_delta_t(ts, 1.0/sample_rate)
-	    #print ts.duration
-	    ts.start_time = end_time - dur
+	        ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=index, low_frequency_cutoff=30)
+	        ts = resample_to_delta_t(ts, 1.0/sample_rate)
+	        #print ts.duration
+	        ts.start_time = end_time - dur
 	    
-	    # The data segment = Signal + Noise; add first in the frequency domain:
+	        # The data segment = Signal + Noise; add first in the frequency domain:
 
-	    signal = signal.to_frequencyseries()  # Signal in frequency domain
-	    fs = ts.to_frequencyseries()          # Time in frequency domain
+	        signal = signal.to_frequencyseries()  # Signal in frequency domain
+	        fs = ts.to_frequencyseries()          # Time in frequency domain
 
-	    sig = pycbc.filter.sigma(signal,psd=psd, low_frequency_cutoff=f_lower)
-	    fs += signal.cyclic_time_shift(toa) / sig * snr
+	        sig = pycbc.filter.sigma(signal,psd=psd, low_frequency_cutoff=f_lower)
+	        fs += signal.cyclic_time_shift(toa) / sig * snr
 
-            dataseg = fs.to_timeseries()
+                dataseg = fs.to_timeseries()
 
-	    highpass(dataseg, 35)
-	    lowpass_fir(dataseg,800,512)
-	    # Convert back into time domain:
-	    waveform_arr[i] = dataseg
-            #if i % 10 == 0:
-		#print waveform_arr[i]           
-            #print i 
+	        highpass(dataseg, 35)
+	        lowpass_fir(dataseg,800,512)
+	        # Convert back into time domain:
+	        waveform_arr[i] = dataseg
+             
     return waveform_arr
 
 

@@ -28,7 +28,7 @@ def _xml_to_txt(filename, label):
 
 
 
-def make_hdf5(txtfile, multiplier=params.multiplier, dur=params.duration, sample_rate=params.sample_rate, outdir=params.outdir, label=params.label):
+def make_hdf5(txtfile, multiplier=params.multiplier, dur=params.duration, sample_rate=params.sample_rate, outdir=params.outdir, label=params.label, n_f = params.noise_fraction):
     """
     Generates a blank hdf5 dataset file for storing the trainingset samples having simulated data. 
 
@@ -42,23 +42,35 @@ def make_hdf5(txtfile, multiplier=params.multiplier, dur=params.duration, sample
 
     output_cache_file = os.path.join(outdir, txtfile)
 
-    n_templates = np.loadtxt(txtfile,delimiter=',').shape[0]
+    templatebank_arr = np.loadtxt(txtfile,delimiter=',')
 
-    signal_nsample_points = int(dur*sample_rate)
+    n_templates = templatebank_arr.shape[0]
+    print("number of templates is {}".format(n_templates))
+    n_noise_samples = int((n_f/(1.0-n_f)) * n_templates)
+    print("number of noise samples is {}".format(n_noise_samples))
+    zero_arr = np.zeros((n_noise_samples,2))
+
+    templatebank_arr_with_noise = np.concatenate((templatebank_arr,zero_arr))
+    np.savetxt(txtfile, templatebank_arr_with_noise, delimiter=',')
+
+    n_templates = templatebank_arr_with_noise.shape[0]
+
     # Total number of samples in the entire training set.
     n_samples = n_templates * multiplier
-    
+
+    signal_nsample_points = int(dur*sample_rate)
     hdffilename = "trainingset_{}.hdf5".format(label)
     hdf_file = os.path.join(os.path.abspath('datasets'),hdffilename)
     f = h5py.File(hdf_file,"w")
 
     f.create_dataset("trainingset",(n_samples,signal_nsample_points))
-
+    print("size of trainingset is {}".format(n_samples))
     f.close()
     print("hdf5 file successfully generated")
     return n_templates
 
-def write_condor_submit_file(exec_name,n_templates,label=params.label, outdir = params.outdir, multiplier = params.multiplier):
+def write_condor_submit_file(exec_name,n_templates, outdir=params.outdir, label=params.label, multiplier = params.multiplier):
+
 
     log_dir = "LOG"
     err_dir = "ERR"
