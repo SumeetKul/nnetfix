@@ -88,13 +88,14 @@ def prepare_Y_data(TrainingData, tg = glitch_params['tg'], glitch_dur = glitch_p
 
     """ Prepares the samples used as the Y-(or prediction)-trainingset. These represent the data that's supposed to be in the gated portion i.e. the actual part of the signal that is affected by the glitch. The number of sample points for this should be equal to the size of the glitch times the sample rate.
     """
-
+    
+    n_samples = TrainingData.shape[-1]
     tuck = scipy.signal.tukey(int(params.glitch_dur*params.sample_rate),alpha=alpha)
     y_glitch = TrainingData[:, tg:(tg+glitch_dur)]
     y_glitch = tuck*y_glitch
 
-    y_glitch[:params.noise_samples] = np.zeros(glitch_dur)
-
+    y_glitch[:int(params.noise_fraction*n_samples)] = np.zeros(glitch_dur)
+    print(int(params.noise_fraction*n_samples))
     return y_glitch
 
 
@@ -141,7 +142,7 @@ def NNetfix(nnetfix_model, X_test, y_test):
     """
     The M.O.A.F.
     """
-
+    print(nnetfix_model.score(X_test,y_test))
     NNet_prediction = nnetfix_model.predict(X_test)
 
 
