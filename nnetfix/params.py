@@ -4,7 +4,7 @@
 
 label = "GW150914"
 ### 1: Trigger Information:
-outdir = "test"
+outdir = "examples/GW150914"
 # Interferometer which has a glitch. One of 'H1','L1' or 'V1'.
 IFO = 'H1'
 
@@ -12,11 +12,11 @@ IFO = 'H1'
 gpstime = 1126259462.42
 
 # Mass Ranges:
-mass1_min = 28.0
-mass1_max = 42.0
+mass1_min = 30.0
+mass1_max = 40.0
 
-mass2_min = 22.0
-mass2_max = 36.0
+mass2_min = 25.0
+mass2_max = 35.0
 
 # Additional Constraints (Optional):
 # Mchirp_min =    #chirp mass
@@ -32,7 +32,7 @@ apx = "IMRPhenomPv2"
 snr_range = (8,45)
 minimal_match = 0.99
 toa_range = 0.025 #seconds
-multiplier = 30
+multiplier = 25
 duration = 10
 sample_rate = 4096
 f_lower = 35
@@ -44,10 +44,10 @@ noise_fraction = 0.1
 ### 3: Glitch Information:
 
 # GPSTime of the glitch:
-glitch_t = gpstime - 0.025
+glitch_t = gpstime - 0.08
 
 # Duration of the glitch (seconds):
-glitch_dur = 0.075
+glitch_dur = 0.04
 
 # Alpha used for the gating:
 alpha = 0.1

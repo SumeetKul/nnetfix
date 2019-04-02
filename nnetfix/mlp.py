@@ -94,7 +94,7 @@ def prepare_Y_data(TrainingData, tg = glitch_params['tg'], glitch_dur = glitch_p
     y_glitch = TrainingData[:, tg:(tg+glitch_dur)]
     y_glitch = tuck*y_glitch
 
-    y_glitch[:int(params.noise_fraction*n_samples)] = np.zeros(glitch_dur)
+    y_glitch[-int(params.noise_fraction*n_samples):] = np.zeros(glitch_dur)
     print(int(params.noise_fraction*n_samples))
     return y_glitch
 
@@ -110,7 +110,7 @@ def split_trainingset(X_data, y_glitch, split_fraction=0.3, sample_rate = params
 
     X_train_full, X_test_full, y_train_full, y_test_full = train_test_split(X_data,y_glitch,test_size = split_fraction)
 
-    start_cut_dur = 5.5 #second(s)
+    start_cut_dur = 6.0 #second(s)
     end_cut_dur = 2.5 # second(s)
 
     X_train = X_train_full[:,int(start_cut_dur*sample_rate):-int(end_cut_dur*sample_rate)]
@@ -202,7 +202,7 @@ def process_dataframe(data_array, scaler, n_samples, tg = glitch_params['tg'], g
     y_testglitch_full = ML_testdata_y[:,tg:tg+glitch_dur]
     y_testglitch_full = tuck*y_testglitch_full
     
-    start_cut_dur = 5.5 #second(s)
+    start_cut_dur = 6.0 #second(s)
     end_cut_dur = 2.5 # second(s)
 
     X_testdata = X_testdata_full[:,int(start_cut_dur*sample_rate):-int(end_cut_dur*sample_rate)]

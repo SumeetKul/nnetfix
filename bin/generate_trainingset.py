@@ -45,7 +45,7 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
 		ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(20000,50000), low_frequency_cutoff=15)
 		ts = resample_to_delta_t(ts, 1.0/sample_rate)
 		highpass(ts, 35)
-		lowpass_fir(ts,800,512)
+		lowpass_fir(ts,600,512)
 		waveform_arr[i] = ts
 
 	else:
@@ -63,7 +63,7 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
     		hc.start_time += end_time
 
 	        snr = np.random.randint(snr_range[0],snr_range[1])
-	        toa = np.around(np.random.uniform(6.98,7.02),3)
+	        toa = np.around(np.random.uniform(7.18,7.22),3)
 
 	        declination = np.random.uniform(-np.pi/2,np.pi/2)
 	        right_ascension = np.random.uniform(0,2*np.pi)
@@ -90,10 +90,10 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
 	        sig = pycbc.filter.sigma(signal,psd=psd, low_frequency_cutoff=f_lower)
 	        fs += signal.cyclic_time_shift(toa) / sig * snr
 
-                dataseg = fs.to_timeseries()
+                dataseg2 = fs.to_timeseries()
 
-	        highpass(dataseg, 35)
-	        lowpass_fir(dataseg,800,512)
+	        dataseg1 = highpass(dataseg2, 35)
+	        dataseg = lowpass_fir(dataseg1,600,512)
 	        # Convert back into time domain:
 	        waveform_arr[i] = dataseg
              
