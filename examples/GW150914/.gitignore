@@ -1,0 +1,4 @@
+*.xml
+LOG/
+ERR/
+OUT/
