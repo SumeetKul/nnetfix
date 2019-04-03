@@ -7,6 +7,7 @@ from pycbc.filter import sigma, resample_to_delta_t, highpass, lowpass_fir
 from pycbc.frame import write_frame
 from pycbc.detector import Detector
 
+from gwpy.timeseries import TimeSeries
 from nnetfix import params
 
 def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.duration, sample_rate = params.sample_rate, apx = params.apx, f_lower = params.f_lower):
@@ -55,13 +56,13 @@ def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.dura
 	sig = pycbc.filter.sigma(signal,psd=psd, low_frequency_cutoff=f_lower)
 	fs += signal.cyclic_time_shift(toa) / sig * snr
 
-	dataseg2 = fs.to_timeseries()
+	dataseg = fs.to_timeseries()
 
-	dataseg1 = highpass(dataseg2, 35)
-	dataseg = lowpass_fir(dataseg1,600,512)
+	#dataseg = highpass(dataseg2, 30)
+	#dataseg = lowpass_fir(dataseg1,600,512)
 
 	param_list = [right_ascension, declination, polarization, snr]
-	
+
 	return dataseg, param_list
 
 
@@ -78,9 +79,9 @@ def inject_noise(dur = params.duration, sample_rate = params.sample_rate):
 	ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(10000), low_frequency_cutoff=15)
 	ts = resample_to_delta_t(ts, 1.0/sample_rate)
 	#print ts.duration
-	ts.start_time = 0
+	#ts.start_time = 0
+	noise_seg = ts
+	#ts1 = highpass(ts, 35)
+	#noise_seg = lowpass_fir(ts1,800,512)
 
-	ts1 = highpass(ts, 35)
-	noise_seg = lowpass_fir(ts1,800,512)
-	
 	return noise_seg
