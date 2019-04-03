@@ -26,8 +26,8 @@ def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.dura
 		 delta_t=1.0/sample_rate,
 		 f_lower=f_lower)
 
-	hp.start_time += end_time
-	hc.start_time += end_time
+	hp.start_time += end_time + 2.8
+	hc.start_time += end_time + 2.8
 
 	toa = 7.2
 

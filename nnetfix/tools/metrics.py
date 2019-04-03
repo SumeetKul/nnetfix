@@ -9,6 +9,7 @@ from pycbc.filter import sigma, resample_to_delta_t, highpass, lowpass_fir, notc
 from pycbc.frame import read_frame, write_frame
 from pycbc.filter import matched_filter
 import pycbc.vetoes
+import pycbc.types
 
 def calculate_snr(timeseries, m1, m2, trigger_time = params.gpstime, apx = params.apx, dur = params.duration, sample_rate = params.sample_rate, f_low = params.f_lower):
 
@@ -16,6 +17,9 @@ def calculate_snr(timeseries, m1, m2, trigger_time = params.gpstime, apx = param
 	Calculates the peak snr value and the time corresponding to the peak snr. Returns the SNR time series.
 	"""
 
+	if type(timeseries) != pycbc.types.timeseries.TimeSeries:
+		strain = TimeSeries(timeseries, sample_rate = sample_rate)
+		timeseries = strain.to_pycbc()
 	# highpass the timeseries:
 	strain = highpass(timeseries,f_low)
 
@@ -47,37 +51,54 @@ def calculate_snr(timeseries, m1, m2, trigger_time = params.gpstime, apx = param
 	peak_snr = snr_ts.max(axis=0)
 
 	# Calculate the location of peak snr:
-	#peak_loc = (snr_ts.times[(np.where(np.array(snr_ts) == np.amax(np.array(snr_ts),axis=0)))[-1]])[-1]
+	peak_loc = (snr_ts.times[(np.where(np.array(snr_ts) == np.amax(np.array(snr_ts),axis=0)))[-1]])[-1].to_value()
 
-	return snr_ts, peak_snr
+	return snr_ts, peak_snr, peak_loc
 
 
 
-def calculate_chisq(timeseries, m1, m2, f_low = params.f_lower, sample_rate = params.sample_rate):
+def calculate_chisq(timeseries, m1, m2, peak_loc, f_low = params.f_lower, sample_rate = params.sample_rate, trig_time = params.gpstime, apx = params.apx):
 
 	"""
 	Performs the chi-squared test to match likeness of the data to the template. Returns peak (lowest) chi_squared value and chi_squared time series.
 	"""
 
-	num_bins = 20
-
-	# highpass the timeseries:
-        strain = timeseries.highpass(20.0)
+	if type(timeseries) != pycbc.types.timeseries.TimeSeries:
+                strain = TimeSeries(timeseries, sample_rate = sample_rate)
+                timeseries = strain.to_pycbc()
+        # highpass the timeseries:
+        strain = highpass(timeseries,f_low)
 
         # Crop ends to remove effects of the bandpass filter:
-        strain = strain.crop(*strain.span.contract(1))
-	strain = strain.to_pycbc()
+        conditioned = strain.crop(1,1)
 
-	# aLIGO PSD:
-	psd = pycbc.psd.aLIGOZeroDetLowPower(dur * sample_rate / 2 + 1, 1.0/dur, 5)
-	
-	# Generate the template for matched filtering:
-        hp, _ = get_fd_waveform(approximant=apx, mass1=35, mass2=29,
-                        f_lower=15, f_final=2048, delta_f=psd.df.value)
-	
+        # Calculate PSD:
+        psd = conditioned.psd(2)
+        psd = interpolate(psd, conditioned.delta_f)
+
+        psd = inverse_spectrum_truncation(psd, 2 * conditioned.sample_rate,
+                                  low_frequency_cutoff=f_low)
+
+        # Generate the template for matched filtering:
+        hp, _ = get_td_waveform(approximant=apx,
+                     mass1=m1,
+                     mass2=m2,
+                     delta_t=strain.delta_t,
+                     f_lower=f_low)
+
+
+        hp.resize(len(conditioned))
+        template = hp.cyclic_time_shift(hp.start_time)
+
+	num_bins = 20
 	# Calculate chi_squared time series:
-	chisq = pycbc.vetoes.power_chisq(template, strain, num_bins, psd=psd, low_frequency_cutoff=f_low)
+	chisq = pycbc.vetoes.power_chisq(template, conditioned, num_bins, psd=psd, low_frequency_cutoff=f_low)
 	
 	# convert to a reduced chisq
 	chisq /= (num_bins * 2) - 2	
-	return chisq
+
+	# Focus chi_sq timeseries around trigger (peak snr) time:
+	chi_focus = chisq.crop(peak_loc-0.15,peak_loc+0.15)
+	chi_min = chi_focus.min()
+
+	return chi_focus, chi_min
