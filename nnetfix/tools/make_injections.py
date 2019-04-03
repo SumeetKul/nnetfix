@@ -67,7 +67,7 @@ def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.dura
 
 
 
-def inject_noise(dur = params.duration, sample_rate = params.sample_rate):
+def inject_noise(dur = params.duration, sample_rate = params.sample_rate, trigger_time = params.gpstime):
 
 	"""
 	Returns a timeseries segment of aLIGO coloured noise of the given duration and sampled at the given rate.
@@ -79,7 +79,7 @@ def inject_noise(dur = params.duration, sample_rate = params.sample_rate):
 	ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(10000), low_frequency_cutoff=15)
 	ts = resample_to_delta_t(ts, 1.0/sample_rate)
 	#print ts.duration
-	#ts.start_time = 0
+	ts.start_time = trigger_time - 7.2
 	noise_seg = ts
 	#ts1 = highpass(ts, 35)
 	#noise_seg = lowpass_fir(ts1,800,512)

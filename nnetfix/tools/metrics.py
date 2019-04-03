@@ -97,8 +97,9 @@ def calculate_chisq(timeseries, m1, m2, peak_loc, f_low = params.f_lower, sample
 	# convert to a reduced chisq
 	chisq /= (num_bins * 2) - 2	
 
+	chisq_gwpy = TimeSeries.from_pycbc(chisq)
 	# Focus chi_sq timeseries around trigger (peak snr) time:
-	chi_focus = chisq.crop(peak_loc-0.15,peak_loc+0.15)
+	chi_focus = chisq_gwpy.crop(peak_loc-0.15,peak_loc+0.15)
 	chi_min = chi_focus.min()
 
 	return chi_focus, chi_min
