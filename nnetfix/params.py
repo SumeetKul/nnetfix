@@ -4,7 +4,7 @@
 
 label = "GW150914"
 ### 1: Trigger Information:
-outdir = "examples/GW150914"
+outdir = "test"
 # Interferometer which has a glitch. One of 'H1','L1' or 'V1'.
 IFO = 'H1'
 
@@ -12,11 +12,11 @@ IFO = 'H1'
 gpstime = 1126259462.42
 
 # Mass Ranges:
-mass1_min = 30.0
-mass1_max = 40.0
+mass1_min = 28.0
+mass1_max = 42.0
 
-mass2_min = 25.0
-mass2_max = 35.0
+mass2_min = 23.0
+mass2_max = 37.0
 
 # Additional Constraints (Optional):
 # Mchirp_min =    #chirp mass
@@ -31,11 +31,11 @@ mass2_max = 35.0
 apx = "IMRPhenomPv2"
 snr_range = (8,45)
 minimal_match = 0.99
-toa_range = 0.025 #seconds
-multiplier = 25
+toa_range = 0.02 #seconds
+multiplier = 50
 duration = 10
 sample_rate = 4096
-f_lower = 35
+f_lower = 30
 
 # Fraction of Trainingset to be comprised of pure noise samples:
 noise_fraction = 0.1
@@ -43,11 +43,11 @@ noise_fraction = 0.1
 
 ### 3: Glitch Information:
 
-# GPSTime of the glitch:
-glitch_t = gpstime - 0.08
+# GPSTime of the glitch: (Currently defined as the START point of the gating we have to do due to the glitch)
+glitch_t = gpstime - 0.07
 
 # Duration of the glitch (seconds):
-glitch_dur = 0.04
+glitch_dur = 0.06
 
 # Alpha used for the gating:
 alpha = 0.1

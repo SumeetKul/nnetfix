@@ -94,7 +94,7 @@ def prepare_Y_data(TrainingData, tg = glitch_params['tg'], glitch_dur = glitch_p
     y_glitch = TrainingData[:, tg:(tg+glitch_dur)]
     y_glitch = tuck*y_glitch
 
-    y_glitch[-int(params.noise_fraction*n_samples):] = np.zeros(glitch_dur)
+    y_glitch[-(int(params.noise_fraction*n_samples)):] = np.zeros(glitch_dur)
     print(int(params.noise_fraction*n_samples))
     return y_glitch
 
@@ -110,7 +110,7 @@ def split_trainingset(X_data, y_glitch, split_fraction=0.3, sample_rate = params
 
     X_train_full, X_test_full, y_train_full, y_test_full = train_test_split(X_data,y_glitch,test_size = split_fraction)
 
-    start_cut_dur = 6.0 #second(s)
+    start_cut_dur = 5.5 #second(s)
     end_cut_dur = 2.5 # second(s)
 
     X_train = X_train_full[:,int(start_cut_dur*sample_rate):-int(end_cut_dur*sample_rate)]
@@ -177,12 +177,12 @@ def reconstruct_testing_set(NNet_prediction, X_test_full, y_test, tg = glitch_pa
 
 
 
-def process_dataframe(data_array, scaler, n_samples, tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur'], alpha = params.alpha):
+def process_dataframe(timeseries, scaler, n_samples= int(params.duration*params.sample_rate) , tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur'], sample_rate = params.sample_rate, alpha = params.alpha):
 
     """
     """
 
-    data_array = np.load(os.path.join(outdir,frame_name))
+    data_array = np.array(timeseries)
     
     data_array_reshape = data_array.reshape(1,n_samples)
     data_array_transform = scaler.transform(data_array_reshape)
@@ -192,28 +192,28 @@ def process_dataframe(data_array, scaler, n_samples, tg = glitch_params['tg'], g
     gate = 1.0-gate_y
 
     #ML_data_glitch = np.copy(ML_data)
-    testdata_glitch = gate*testdata_transform
+    testdata_glitch = gate*data_array_transform
 
     X_testdata_full = testdata_glitch
     # Check of the padding has been done right:
     X_testdata_full.shape
 
-    ML_testdata_y = np.copy(testdata_transform)
+    ML_testdata_y = np.copy(data_array_transform)
     y_testglitch_full = ML_testdata_y[:,tg:tg+glitch_dur]
     y_testglitch_full = tuck*y_testglitch_full
     
-    start_cut_dur = 6.0 #second(s)
+    start_cut_dur = 5.5 #second(s)
     end_cut_dur = 2.5 # second(s)
 
     X_testdata = X_testdata_full[:,int(start_cut_dur*sample_rate):-int(end_cut_dur*sample_rate)]
 
     y_testglitch = y_testglitch_full
 
-    return X_testdata, y_testglitch
+    return X_testdata_full, X_testdata, y_testglitch
 
 
 
-def reconstruct_frame(NNet_prediction, X_test_full, y_test, n_samples, tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur']):
+def reconstruct_frame(NNet_prediction, scaler, X_test_full, y_test, n_samples=int(params.duration*params.sample_rate), tg = glitch_params['tg'], glitch_dur = glitch_params['glitch_dur'], sample_rate = params.sample_rate):
 
     """
     """
@@ -223,23 +223,23 @@ def reconstruct_frame(NNet_prediction, X_test_full, y_test, n_samples, tg = glit
 
     # ### 'Fill in the gaps' of the X-data:
     PredictX = np.copy(X_test_full)
-    PredictX[:,glitch_t:(glitch_t+glitch_dur)] = PredictX[:, glitch_t:(glitch_t+glitch_dur)] + test_prediction
+    PredictX[:,tg:(tg+glitch_dur)] = PredictX[:, tg:(tg+glitch_dur)] + test_prediction
     PredictData = PredictX
     #PredictData = predict_Lreg 
 
     # # ### FOR REFERENCE: Recover the actual data segments from the testing set:
     ActualX = np.copy(X_test_full)
-    ActualX[:,glitch_t:(glitch_t+glitch_dur)] = ActualX[:,glitch_t:(glitch_t+glitch_dur)]+(invgate*y_test)
+    ActualX[:,tg:(tg+glitch_dur)] = ActualX[:,tg:(tg+glitch_dur)]+(invgate*y_test)
     OriginalData = ActualX
 
     ### Finally, we create an array of the cut (X) data set:
     CutData = X_test_full
 
 
-    gate_y = np.pad(invgate,(glitch_t,(n_samples - glitch_t - glitch_dur)),'constant')
+    gate_y = np.pad(invgate,(tg,(n_samples - tg - glitch_dur)),'constant')
     gate = 1.0-gate_y
 
-    OriginalData = scaler.inverse_transform(testdata_transform.reshape(1,-1))
+    OriginalData = scaler.inverse_transform(OriginalData.reshape(1,-1))
     OriginalData = OriginalData.reshape(-1)
 
     CutData = scaler.inverse_transform(CutData.reshape(1,-1))

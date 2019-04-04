@@ -11,7 +11,7 @@ import pickle
 
 print(datetime.datetime.now().time())
 run_commandline("mkdir {}".format(params.outdir))
-run_commandline("mkdir models/{}".format(params.label))
+#run_commandline("mkdir models/{}".format(params.label))
 print(params.label)
 
 xml_filename = tbank.generate_tbank(params.label,params.mass1_min,params.mass1_max,params.mass2_min,params.mass2_max,params.minimal_match)
@@ -19,10 +19,10 @@ xml_filename = tbank.generate_tbank(params.label,params.mass1_min,params.mass1_m
 txt_filename = tsutils._xml_to_txt(xml_filename,params.label)
 
 n_templates = tsutils.make_hdf5(txt_filename)
-tsutils.write_condor_submit_file("generate_trainingset.py",n_templates)
-#seg = simulate_single_data_segment(13,7,2)
-run_commandline("condor_submit {0}/condor_{1}.sub".format(os.path.abspath('datasets'),params.label))
-run_commandline("condor_wait {}/LOG/mainlog.log".format(params.outdir))
+#tsutils.write_condor_submit_file("generate_trainingset.py",n_templates)
+
+#run_commandline("condor_submit {0}/condor_{1}.sub".format(os.path.abspath('datasets'),params.label))
+#run_commandline("condor_wait {}/LOG/mainlog.log".format(params.outdir))
 
 print("training dataset saved")
 
@@ -56,12 +56,12 @@ print("model trained. GREAT SUCCESS!")
 # # SAVE ML_model using pickle
 
 pkl_filename = "model_{}.pkl".format(params.label)
-with open(os.path.join(os.path.abspath('models/{}'.format(params.label)),pkl_filename), 'wb') as file:
+with open(os.path.join(os.path.abspath('models/'.format(params.label)),pkl_filename), 'wb') as file:
      pickle.dump(nnetmodel, file)
      print("model saved successfully")
 
 scaler_filename = "scaler_{}.pkl".format(params.label)
-with open(os.path.join(os.path.abspath('models/{}'.format(params.label)),scaler_filename), 'wb') as file:
+with open(os.path.join(os.path.abspath('models/'.format(params.label)),scaler_filename), 'wb') as file:
      pickle.dump(scaler, file)
      print("scaler saved successfully")
 
@@ -69,6 +69,11 @@ with open(os.path.join(os.path.abspath('models/{}'.format(params.label)),scaler_
 NNet_prediction =  mlp.NNetfix(nnetmodel,X_test,y_test)
 
 OriginalData, CutData, PredictData = mlp.reconstruct_testing_set(NNet_prediction, X_test_full, y_test)
+
+np.savetxt("{}/OriginalData.txt".format(params.outdir),OriginalData)
+np.savetxt("{}/CutData.txt".format(params.outdir),CutData)
+np.savetxt("{}/PredictData.txt".format(params.outdir),PredictData)
+
 print PredictData.shape
 print("GREATER SUCCESS")
 
