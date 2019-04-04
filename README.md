@@ -22,6 +22,7 @@ For instance, if masses m1 and m2 are triggered in the best-matching template, t
 2.  Create a virtual environment in the parent nnetfix directory:
     * Python 2.x: "virtualenv nnetfix-pyenv"
     * Python 3.x: "python3 -m venv nnetfix-py3env"
+    NOTE: Use Python 2 at present since pycbc is not yet fully compatible with Python 3.
 3.  Install all the required dependencies using "pip (python 2.x) / pip3 (python3.x) install -r requirements.txt"
 4.  Setup: Run "python setup.py install"
 
