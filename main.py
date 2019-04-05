@@ -20,10 +20,11 @@ xml_filename = tbank.generate_tbank(params.label,params.mass1_min,params.mass1_m
 txt_filename = tsutils._xml_to_txt(xml_filename,params.label)
 
 n_templates = tsutils.make_hdf5(txt_filename)
-#tsutils.write_condor_submit_file("generate_trainingset.py",n_templates)
 
-#run_commandline("condor_submit {0}/condor_{1}.sub".format(os.path.abspath('datasets'),params.label))
-#run_commandline("condor_wait {}/LOG/mainlog.log".format(params.outdir))
+tsutils.write_condor_submit_file("generate_trainingset.py",n_templates)
+
+run_commandline("condor_submit {0}/condor_{1}.sub".format(os.path.abspath('datasets'),params.label))
+run_commandline("condor_wait {}/LOG/mainlog.log".format(params.outdir))
 
 print("training dataset saved")
 
