@@ -9,7 +9,7 @@ outdir = "test"
 IFO = 'H1'
 
 # GPSTime of the trigger:
-gpstime = 1126259462.42
+gpstime = 1126259467.42
 
 # Mass Ranges:
 mass1_min = 28.0
@@ -36,7 +36,7 @@ multiplier = 50
 duration = 10
 sample_rate = 4096
 f_lower = 30
-
+f_high = 400
 # Fraction of Trainingset to be comprised of pure noise samples:
 noise_fraction = 0.1
 

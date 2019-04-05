@@ -20,11 +20,11 @@ from ligotimegps import LIGOTimeGPS
 gpstime = params.gpstime
 
 # Dictionary to record data:
-GWdata = dict()
+spec_lines = dict()
 
 # O1 Spectral lines: (O2 has clean data available through GWOSC. Add tag 'CLN')
-L1_lines = [33.7,34.7,35.3,60,120,180,307.3,307.5,315.1,333.3,612.5,615.]
-H1_lines = [35.9,36.7,37.3,60,120,180,299.6,299.4,300.5,300.,302.,302.22,303.31,331.9,504.0,508.5,599.14,599.42,612.5]
+spec_lines['L1_lines'] = [33.7,34.7,35.3,60,120,180,307.3,307.5,315.1,333.3,612.5,615.]
+spec_lines['H1_lines'] = [35.9,36.7,37.3,60,120,180,299.6,299.4,300.5,300.,302.,302.22,303.31,331.9,504.0,508.5,599.14,599.42,612.5]
 
 def load_data(IFO, tag='C00', gpstime=params.gpstime):  # In future: Add parser for event name.
 
@@ -71,7 +71,13 @@ def crop_for_nnetfix(clean_timeseries, gpstime =  params.gpstime, sample_rate = 
 
 	inj_segment = strain_ts[start:end]
 
-	return inj_segment
+	return inj_segment, start, end
 
 	
+def rejoin_frame(frame_array, raw_timeseries, start, end):
+
+	raw_timeseries[start:end] = frame_array
+
+	return raw_timeseries
+
 

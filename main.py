@@ -3,6 +3,7 @@ from nnetfix import params
 import nnetfix.trainingset.templatebank as tbank
 import nnetfix.trainingset.trainingset_utils as tsutils
 from nnetfix.tools.utils import run_commandline
+from nnetfix.tools import metrics, process_data
 from nnetfix import mlp
 import os 
 import datetime
@@ -66,16 +67,63 @@ with open(os.path.join(os.path.abspath('models/'.format(params.label)),scaler_fi
      print("scaler saved successfully")
 
 
-NNet_prediction =  mlp.NNetfix(nnetmodel,X_test,y_test)
+#NNet_prediction =  mlp.NNetfix(nnetmodel,X_test,y_test)
 
-OriginalData, CutData, PredictData = mlp.reconstruct_testing_set(NNet_prediction, X_test_full, y_test)
+# Reconstruct samples in the testing set.
 
-np.savetxt("{}/OriginalData.txt".format(params.outdir),OriginalData)
-np.savetxt("{}/CutData.txt".format(params.outdir),CutData)
-np.savetxt("{}/PredictData.txt".format(params.outdir),PredictData)
+#OriginalData, CutData, PredictData = mlp.reconstruct_testing_set(NNet_prediction, X_test_full, y_test)
 
-print PredictData.shape
-print("GREATER SUCCESS")
+#np.savetxt("{}/OriginalData.txt".format(params.outdir),OriginalData)
+#np.savetxt("{}/CutData.txt".format(params.outdir),CutData)
+#np.savetxt("{}/PredictData.txt".format(params.outdir),PredictData)
+
+#print PredictData.shape
+#print("GREATER SUCCESS")
+
+# Load real data corresponding to the given GPS time and reconstruct the signal that lies within:
+
+GWData = dict()
+
+strain_raw = process_data.load_data(params.IFO)
+print("{} Data loaded".format(params.label))
+strain_clean = process_data.clean(strain_raw, 30., 600., spec_lines = process_data.spec_lines['{}_lines'.format(params.IFO)])
+print("{} Data cleaned".format(params.label))
+
+GWData['{}_strain_raw'.format(params.IFO)] = strain_raw
+GWData['{}_strain_clean'.format(params.IFO)] = strain_clean
+
+strain_nnetfix, start, end = process_data.crop_for_nnetfix(strain_clean)
+print("Data cropped for NNetfixing")
+
+X_testdata_full, X_testdata, y_testglitch = mlp.process_dataframe(strain_nnetfix, scaler)
+
+NNet_prediction = mlp.NNetfix(nnetmodel, X_testdata, y_testglitch)
+
+OriginalData, CutData, PredictData = mlp.reconstruct_frame(NNet_prediction, scaler, X_testdata_full, y_testglitch)
+print("{} NNETFIXED".format(params.label))
+
+strain_reconstructed = process_data.rejoin_frame(PredictData, strain_raw, start, end)
+strain_gated = process_data.rejoin_frame(CutData, strain_raw, start, end)
+strain_original = process_data.rejoin_frame(OriginalData, strain_raw, start, end)
+
+print("Data rejoined")
+snr, snrp, snrl = metrics.calculate_snr(strain_clean, 35, 29)
+print("The raw SNR is {} at {}.".format(snrp, snrl))
+
+snr, snrp, snrl = metrics.calculate_snr(strain_reconstructed, 35, 29)
+print("The reconstructed SNR is {} at {}.".format(snrp, snrl))
+
+snr, snrp, snrl = metrics.calculate_snr(strain_gated, 35, 29)
+print("The gated SNR is {} at {}.".format(snrp, snrl))
+
+snr, snrp, snrl = metrics.calculate_snr(strain_original, 35, 29)
+print("The new original SNR is {} at {}.".format(snrp, snrl))
+
+strain_reconstructed.write(os.path.join(params.outdir,"{}_{}_reconstructed.gwf".format(params.IFO,params.label)))
+strain_gated.write(os.path.join(params.outdir,"{}_{}_gated.gwf".format(params.IFO,params.label)))
+strain_raw.write(os.path.join(params.outdir,"{}_{}_original.gwf".format(params.IFO,params.label)))
+
+
 
 print(datetime.datetime.now().time())
 #run_commandline("./generate_trainingset.py 13")
