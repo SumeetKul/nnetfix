@@ -2,21 +2,21 @@
 ########################## A universal configuration file defining various parameters used for running NNETFIX #####################################
 ####################################################################################################################################################
 
-label = "GW150914"
+label = "GW170608"
 ### 1: Trigger Information:
 outdir = "test"
 # Interferometer which has a glitch. One of 'H1','L1' or 'V1'.
 IFO = 'H1'
 
 # GPSTime of the trigger:
-gpstime = 1126259462.42
+gpstime = 1180922494.49
 
 # Mass Ranges:
-mass1_min = 28.0
-mass1_max = 42.0
+mass1_min = 10.0
+mass1_max = 15.0
 
-mass2_min = 23.0
-mass2_max = 37.0
+mass2_min = 5.0
+mass2_max = 10.0
 
 # Additional Constraints (Optional):
 # Mchirp_min =    #chirp mass
@@ -30,13 +30,13 @@ mass2_max = 37.0
 
 apx = "IMRPhenomPv2"
 snr_range = (8,45)
-minimal_match = 0.99
+minimal_match = 0.97
 toa_range = 0.01 #seconds
-multiplier = 50
+multiplier = 25
 duration = 10
 sample_rate = 4096
 f_lower = 30
-f_high = 400
+f_high = 500
 # Fraction of Trainingset to be comprised of pure noise samples:
 noise_fraction = 0.1
 
@@ -44,10 +44,10 @@ noise_fraction = 0.1
 ### 3: Glitch Information:
 
 # Time before merger: (in sec., defined as duration between the END time of the gating and the trigger time)
-glitch_tbm = 0.02
+glitch_tbm = 0.05
 
 # Duration of the glitch (seconds):
-glitch_dur = 0.06
+glitch_dur = 0.125
 
 # GPSTime of the glitch: (Currently defined as the START point of the gating we have to do due to the glitch)
 glitch_t = gpstime - glitch_tbm - glitch_dur
