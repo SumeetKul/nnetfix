@@ -38,6 +38,6 @@ For instance, if masses m1 and m2 are triggered in the best-matching template, t
     * Generate a trainingset which is saved as an hdf5 file the datasets directory. 
     * Process the data and Train a multi-layered perceptron neural network on the trainingset.
     * Save the model using pickle for later use.
-    * [Under Development] use the model to reconstruct the glitch-affected portion of a real GW event if provided in the label.
+    * Use the model to reconstruct the glitch-affected portion of a real GW event as provided in the label. The reconstructed frames (in additon to ones which have the glitch part gated) are saved in the given output directory.
 3.  To test the model on injections, open 'injection_stats.py' and add the desired injection parameters. This will evaluate the model performance on the injections based on metrics such as reconstruction of SNR, the chi-squared test etc.
 
