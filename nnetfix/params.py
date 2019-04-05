@@ -31,7 +31,7 @@ mass2_max = 37.0
 apx = "IMRPhenomPv2"
 snr_range = (8,45)
 minimal_match = 0.99
-toa_range = 0.02 #seconds
+toa_range = 0.01 #seconds
 multiplier = 50
 duration = 10
 sample_rate = 4096
@@ -43,11 +43,15 @@ noise_fraction = 0.1
 
 ### 3: Glitch Information:
 
-# GPSTime of the glitch: (Currently defined as the START point of the gating we have to do due to the glitch)
-glitch_t = gpstime - 0.07
+# Time before merger: (in sec., defined as duration between the END time of the gating and the trigger time)
+glitch_tbm = 0.02
 
 # Duration of the glitch (seconds):
 glitch_dur = 0.06
+
+# GPSTime of the glitch: (Currently defined as the START point of the gating we have to do due to the glitch)
+glitch_t = gpstime - glitch_tbm - glitch_dur
+
 
 # Alpha used for the gating:
 alpha = 0.1

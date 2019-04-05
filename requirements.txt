@@ -13,4 +13,4 @@ pycbc
 lalsuite
 htcondor
 scikit-learn
-
+astropy
