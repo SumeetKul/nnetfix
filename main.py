@@ -48,11 +48,11 @@ print("y-data created")
 
 X_train, X_test, X_train_full, X_test_full, y_train, y_test = mlp.split_trainingset(Xdata, y_glitch)
 
-print("data split")
+print("data split.")
 
 nnetmodel = mlp.NNetfit(X_train, y_train)
 
-print("model trained. GREAT SUCCESS!")
+print("NNetfix model trained.")
 
 # # SAVE ML_model using pickle
 
@@ -123,7 +123,7 @@ strain_reconstructed.write(os.path.join(params.outdir,"{}_{}_reconstructed.gwf".
 strain_gated.write(os.path.join(params.outdir,"{}_{}_gated.gwf".format(params.IFO,params.label)))
 strain_raw.write(os.path.join(params.outdir,"{}_{}_original.gwf".format(params.IFO,params.label)))
 
-
+print("{} NNETFIXED. GREAT SUCCESS!".format(params.label))
 
 print(datetime.datetime.now().time())
 #run_commandline("./generate_trainingset.py 13")

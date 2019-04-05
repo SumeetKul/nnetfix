@@ -9,7 +9,7 @@ outdir = "test"
 IFO = 'H1'
 
 # GPSTime of the trigger:
-gpstime = 1126259467.42
+gpstime = 1126259462.42
 
 # Mass Ranges:
 mass1_min = 28.0

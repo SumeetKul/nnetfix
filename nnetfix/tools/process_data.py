@@ -26,13 +26,13 @@ spec_lines = dict()
 spec_lines['L1_lines'] = [33.7,34.7,35.3,60,120,180,307.3,307.5,315.1,333.3,612.5,615.]
 spec_lines['H1_lines'] = [35.9,36.7,37.3,60,120,180,299.6,299.4,300.5,300.,302.,302.22,303.31,331.9,504.0,508.5,599.14,599.42,612.5]
 
-def load_data(IFO, tag='C00', gpstime=params.gpstime):  # In future: Add parser for event name.
+def load_data(IFO, tag='C00', gpstime=params.gpstime, sample_rate = params.sample_rate):  # In future: Add parser for event name.
 
 	"""
 	Loads 30s. of data including the event corresponding to the given gpstime.
 	"""
 
-	GWdata = TimeSeries.fetch_open_data(IFO, gpstime - 20,  gpstime + 10, sample_rate=4096)
+	GWdata = TimeSeries.fetch_open_data(IFO, gpstime - 20,  gpstime + 10, sample_rate=sample_rate)
 
 	return GWdata
 
@@ -75,9 +75,11 @@ def crop_for_nnetfix(clean_timeseries, gpstime =  params.gpstime, sample_rate = 
 
 	
 def rejoin_frame(frame_array, raw_timeseries, start, end):
+	
+	
+	filled_timeseries = raw_timeseries.copy()
+	filled_timeseries[start:end] = frame_array
 
-	raw_timeseries[start:end] = frame_array
-
-	return raw_timeseries
+	return filled_timeseries
 
 
