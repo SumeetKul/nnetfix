@@ -26,7 +26,7 @@ spec_lines = dict()
 spec_lines['L1_lines'] = [33.7,34.7,35.3,60,120,180,307.3,307.5,315.1,333.3,612.5,615.]
 spec_lines['H1_lines'] = [35.9,36.7,37.3,60,120,180,299.6,299.4,300.5,300.,302.,302.22,303.31,331.9,504.0,508.5,599.14,599.42,612.5]
 
-def load_data(IFO, tag='C00', gpstime=params.gpstime, sample_rate = params.sample_rate):  # In future: Add parser for event name.
+def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.sample_rate):  # In future: Add parser for event name.
 
 	"""
 	Loads 30s. of data including the event corresponding to the given gpstime.
@@ -39,19 +39,28 @@ def load_data(IFO, tag='C00', gpstime=params.gpstime, sample_rate = params.sampl
 
 
 
-def clean(timeseries, f_low, f_high, spec_lines):
+def clean(timeseries, spec_lines, tag = params.tag, f_low=params.f_lower, f_high=params.f_high):
 
 	"""
 	Cleans data by removing spectral lines; bandpasses the data segment.
 	"""
 
-	bp = filter_design.bandpass(f_low, f_high, 4096.)
-	notches = [filter_design.notch(f, 4096.) for f in spec_lines]
-	zpk = filter_design.concatenate_zpks(bp, *notches)
+	if tag == 'C00':
 
-	clean_timeseries = timeseries.filter(zpk, filtfilt=True)
+		bp = filter_design.bandpass(f_low, f_high, 4096.)
+		notches = [filter_design.notch(f, 4096.) for f in spec_lines]
+		zpk = filter_design.concatenate_zpks(bp, *notches)
+
+		clean_timeseries = timeseries.filter(zpk, filtfilt=True)
+
+	elif tag == 'CLN':
+
+		bp_timeseries = timeseries.notch(60).bandpass(f_low,f_high)
+		clean_timeseries = bp_timeseries
 
 	return clean_timeseries
+
+
 
 
 def crop_for_nnetfix(clean_timeseries, gpstime =  params.gpstime, sample_rate = params.sample_rate):

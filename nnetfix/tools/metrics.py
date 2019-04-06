@@ -11,7 +11,7 @@ from pycbc.filter import matched_filter
 import pycbc.vetoes
 import pycbc.types
 
-def calculate_snr(timeseries, m1, m2, trigger_time = params.gpstime, apx = params.apx, dur = params.duration, sample_rate = params.sample_rate, f_low = params.f_lower):
+def calculate_snr(timeseries, m1, m2, apx = params.apx, dur = params.duration, sample_rate = params.sample_rate, f_low = params.f_lower):
 
 	"""
 	Calculates the peak snr value and the time corresponding to the peak snr. Returns the SNR time series.
@@ -24,13 +24,13 @@ def calculate_snr(timeseries, m1, m2, trigger_time = params.gpstime, apx = param
 	strain = highpass(timeseries,f_low)
 
 	# Crop ends to remove effects of the bandpass filter:
-        conditioned = strain.crop(1,1)  
+        conditioned = strain.crop(2,2)  
 		
 	# Calculate PSD:
-	psd = conditioned.psd(2)
+	psd = conditioned.psd(4)
 	psd = interpolate(psd, conditioned.delta_f)
 	
-	psd = inverse_spectrum_truncation(psd, 2 * conditioned.sample_rate,
+	psd = inverse_spectrum_truncation(psd, 4 * conditioned.sample_rate,
                                   low_frequency_cutoff=f_low)
 	
 	# Generate the template for matched filtering:

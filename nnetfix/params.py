@@ -11,6 +11,7 @@ IFO = 'H1'
 # GPSTime of the trigger:
 gpstime = 1180922494.49
 
+tag = "CLN"
 # Mass Ranges:
 mass1_min = 10.0
 mass1_max = 15.0
@@ -21,8 +22,8 @@ mass2_max = 10.0
 # Additional Constraints (Optional):
 # Mchirp_min =    #chirp mass
 # Mchirp_max =    
-#MTotal_min = 50   #total mass
-#MTotal_max = 60
+MTotal_min = 16   #total mass
+MTotal_max = 23
 #eta_min = 0.25       #mass ratio
 #eta_max = 0.30
 
@@ -35,7 +36,7 @@ toa_range = 0.01 #seconds
 multiplier = 25
 duration = 10
 sample_rate = 4096
-f_lower = 30
+f_lower = 35
 f_high = 500
 # Fraction of Trainingset to be comprised of pure noise samples:
 noise_fraction = 0.1
