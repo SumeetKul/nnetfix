@@ -128,7 +128,7 @@ def NNetfit(X_train,y_train,hidden_layer_sizes=(200,)):
     """
     """
 
-    nnetfix_model = MLPRegressor(hidden_layer_sizes=hidden_layer_sizes,verbose=True)
+    nnetfix_model = MLPRegressor(hidden_layer_sizes=hidden_layer_sizes,verbose=True, early_stopping=True)
     nnetfix_model.fit(X_train,y_train)
 
     print(nnetfix_model.score(X_train,y_train))
