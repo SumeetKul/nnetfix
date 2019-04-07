@@ -17,7 +17,7 @@ from pycbc.frame import write_frame
 ###########################################################################################################################################################################
 ###################################### Define function to simulate data ###################################################################################################
 
-def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = params.IFO, apx = params.apx, f_lower = params.f_lower, dur = params.duration, snr_range = params.snr_range, sample_rate = params.sample_rate):
+def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx, f_lower = params.f_lower, dur = params.duration, snr_range = params.snr_range, sample_rate = params.sample_rate):
     
     waveform_arr = np.zeros((params.multiplier,int(sample_rate*dur)))
 #    for i in range(params.multiplier):
@@ -59,11 +59,15 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
                          delta_t=1.0/sample_rate,
                          f_lower=f_lower)
 
+		end_time = params.gpstime + 3.5
+
     		hp.start_time += end_time
     		hc.start_time += end_time
 
+		data_duration = dur + 1
+
 	        snr = np.random.randint(snr_range[0],snr_range[1])
-	        toa = np.around(np.random.uniform(7.18,7.22),3)
+	        toa = np.around(np.random.uniform(7.7-params.toa_err, 7.7+params.toa_err),3)
 
 	        declination = np.random.uniform(-np.pi/2,np.pi/2)
 	        right_ascension = np.random.uniform(0,2*np.pi)
@@ -72,15 +76,15 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
 	  
 	        signal = detector.project_wave(hp, hc, right_ascension, declination, polarization)
 	        # Prepend zeros to make the total duration equal to the defined duration:
-	        signal.prepend_zeros(int(signal.sample_rate*(dur-signal.duration)))
+	        signal.prepend_zeros(int(signal.sample_rate*(data_duration-signal.duration)))
 
 	        # Add noise:
-	        psd = pycbc.psd.aLIGOZeroDetLowPower(dur * sample_rate + 1, 1.0/dur, f_lower)
+	        psd = pycbc.psd.aLIGOZeroDetLowPower(data_duration * sample_rate + 1, 1.0/data_duration, f_lower)
 
-	        ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=index, low_frequency_cutoff=30)
+	        ts = noise_from_string("aLIGOZeroDetLowPower", 0, data_duration, seed=index, low_frequency_cutoff=30)
 	        ts = resample_to_delta_t(ts, 1.0/sample_rate)
 	        #print ts.duration
-	        ts.start_time = end_time - dur
+	        ts.start_time = end_time - data_duration
 	    
 	        # The data segment = Signal + Noise; add first in the frequency domain:
 
@@ -90,11 +94,13 @@ def simulate_single_data_segment(m1,m2,index, end_time = params.gpstime, IFO = p
 	        sig = pycbc.filter.sigma(signal,psd=psd, low_frequency_cutoff=f_lower)
 	        fs += signal.cyclic_time_shift(toa) / sig * snr
 
-                dataseg2 = fs.to_timeseries()
+		# Convert back into time-domain:
+                dataseg = fs.to_timeseries()
 
-	        dataseg1 = highpass(dataseg2, params.f_lower)
-	        dataseg = lowpass_fir(dataseg1,params.f_high,512)
-	        # Convert back into time domain:
+		# Whiten and high-pass:
+	        dataseg = dataseg.whiten(1,1)
+		dataseg = highpass(dataseg, params.f_lower)
+	        
 	        waveform_arr[i] = dataseg
              
     return waveform_arr

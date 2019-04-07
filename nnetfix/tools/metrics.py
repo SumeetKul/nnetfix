@@ -45,6 +45,7 @@ def calculate_snr(timeseries, m1, m2, apx = params.apx, dur = params.duration, s
 	template = hp.cyclic_time_shift(hp.start_time)
 	# Calculate snr time series:
 	snr = matched_filter(template, conditioned, psd=psd, low_frequency_cutoff=f_low)
+	snr = snr.crop(2,2)
 	snr_ts = TimeSeries.from_pycbc(snr).abs()
 
 	# Calculate the peak snr value:
