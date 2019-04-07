@@ -12,7 +12,7 @@ import pickle
 
 print(datetime.datetime.now().time())
 run_commandline("mkdir {}".format(params.outdir))
-#run_commandline("mkdir models/{}".format(params.label))
+run_commandline("mkdir models/{}".format(params.label))
 print(params.label)
 
 xml_filename = tbank.generate_tbank(params.label,params.mass1_min,params.mass1_max,params.mass2_min,params.mass2_max,params.minimal_match)
@@ -65,12 +65,12 @@ print("NNetfix model trained.")
 # # SAVE ML_model using pickle
 
 pkl_filename = "model_{}.pkl".format(params.label)
-with open(os.path.join(os.path.abspath('models/'.format(params.label)),pkl_filename), 'wb') as file:
+with open(os.path.join(os.path.abspath('models/{}'.format(params.label)),pkl_filename), 'wb') as file:
      pickle.dump(nnetmodel, file)
      print("model saved successfully")
 
 scaler_filename = "scaler_{}.pkl".format(params.label)
-with open(os.path.join(os.path.abspath('models/'.format(params.label)),scaler_filename), 'wb') as file:
+with open(os.path.join(os.path.abspath('models/{}'.format(params.label)),scaler_filename), 'wb') as file:
      pickle.dump(scaler, file)
      print("scaler saved successfully")
 
@@ -92,7 +92,7 @@ GWData = dict()
 
 strain_raw = process_data.load_data(params.IFO)
 print("{} Data loaded".format(params.label))
-strain_clean = process_data.clean(strain_raw, 30., 600., spec_lines = process_data.spec_lines['{}_lines'.format(params.IFO)])
+strain_clean = process_data.clean(strain_raw, spec_lines = process_data.spec_lines['{}_lines'.format(params.IFO)])
 print("{} Data cleaned".format(params.label))
 
 GWData['{}_strain_raw'.format(params.IFO)] = strain_raw
