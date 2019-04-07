@@ -29,11 +29,13 @@ spec_lines['H1_lines'] = [35.9,36.7,37.3,60,120,180,299.6,299.4,300.5,300.,302.,
 def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.sample_rate):  # In future: Add parser for event name.
 
 	"""
-	Loads 30s. of data including the event corresponding to the given gpstime.
+	Loads and whitens 30s. of data including the event corresponding to the given gpstime.
 	"""
 
 	GWdata = TimeSeries.fetch_open_data(IFO, gpstime - 20,  gpstime + 10, sample_rate=sample_rate)
-
+	#GWdata = GWdata.to_pycbc()
+	GWdata = GWdata.whiten()
+	GWdata = GWdata.highpass(params.f_lower)
 	return GWdata
 
 

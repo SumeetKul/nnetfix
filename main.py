@@ -92,14 +92,14 @@ GWData = dict()
 
 strain_raw = process_data.load_data(params.IFO)
 print("{} Data loaded".format(params.label))
-strain_clean = process_data.clean(strain_raw, spec_lines = process_data.spec_lines['{}_lines'.format(params.IFO)])
-print("{} Data cleaned".format(params.label))
+#strain_clean = process_data.clean(strain_raw, spec_lines = process_data.spec_lines['{}_lines'.format(params.IFO)])
+#print("{} Data cleaned".format(params.label))
 
 GWData['{}_strain_raw'.format(params.IFO)] = strain_raw
-GWData['{}_strain_clean'.format(params.IFO)] = strain_clean
+#GWData['{}_strain_clean'.format(params.IFO)] = strain_clean
 
 # Crop the data into a 10 sec. segment that NNETFIX can work with,
-strain_nnetfix, start, end = process_data.crop_for_nnetfix(strain_clean)
+strain_nnetfix, start, end = process_data.crop_for_nnetfix(strain_raw)
 print("Data cropped for NNetfixing")
 
 # Scale the data using the NNETFIX model's scaler:
@@ -119,16 +119,16 @@ strain_original = process_data.rejoin_frame(OriginalData, strain_raw, start, end
 print("Data rejoined")
 
 # Get initial estimates of the SNR with the best-matching template. ## This needs to be soft coded!
-snr, snrp, snrl = metrics.calculate_snr(strain_clean, 12, 7)
+snr, snrp, snrl = metrics.calculate_snr(strain_raw, 35, 29)
 print("The raw SNR is {} at {}.".format(snrp, snrl))
 
-snr, snrp, snrl = metrics.calculate_snr(strain_reconstructed, 12, 7)
+snr, snrp, snrl = metrics.calculate_snr(strain_reconstructed, 35, 29)
 print("The reconstructed SNR is {} at {}.".format(snrp, snrl))
 
-snr, snrp, snrl = metrics.calculate_snr(strain_gated, 12, 7)
+snr, snrp, snrl = metrics.calculate_snr(strain_gated, 35, 29)
 print("The gated SNR is {} at {}.".format(snrp, snrl))
 
-snr, snrp, snrl = metrics.calculate_snr(strain_original, 12, 7)
+snr, snrp, snrl = metrics.calculate_snr(strain_original, 35, 29)
 print("The new original SNR is {} at {}.".format(snrp, snrl))
 
 strain_reconstructed.write(os.path.join(params.outdir,"{}_{}_reconstructed.gwf".format(params.IFO,params.label)))
