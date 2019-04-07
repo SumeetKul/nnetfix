@@ -20,6 +20,8 @@ from pycbc.frame import write_frame
 def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx, f_lower = params.f_lower, dur = params.duration, snr_range = params.snr_range, sample_rate = params.sample_rate):
     
     waveform_arr = np.zeros((params.multiplier,int(sample_rate*dur)))
+
+    data_duration = dur + 1
 #    for i in range(params.multiplier):
 
 #    detector = Detector('{}'.format(IFO))
@@ -40,12 +42,15 @@ def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx
 	if m1 == 0.0 and m2 == 0.0:
 
 		# Generate noise from the aLIGO PSD:
-		psd = pycbc.psd.aLIGOZeroDetLowPower(dur * int(sample_rate)  + 1, 1.0/dur, dur)
+		psd = pycbc.psd.aLIGOZeroDetLowPower(data_duration * int(sample_rate)  + 1, 1.0/data_duration, data_duration)
 
-		ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(20000,50000), low_frequency_cutoff=15)
+		ts = noise_from_string("aLIGOZeroDetLowPower", 0, data_duration, seed=np.random.randint(20000,50000), low_frequency_cutoff=15)
 		ts = resample_to_delta_t(ts, 1.0/sample_rate)
-		highpass(ts, 35)
-		lowpass_fir(ts,600,512)
+		
+		# Whiten and bandpass:
+		ts = ts.whiten(1,1)
+		ts = highpass(ts, 30)
+		
 		waveform_arr[i] = ts
 
 	else:
@@ -64,8 +69,7 @@ def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx
     		hp.start_time += end_time
     		hc.start_time += end_time
 
-		data_duration = dur + 1
-
+	
 	        snr = np.random.randint(snr_range[0],snr_range[1])
 	        toa = np.around(np.random.uniform(7.7-params.toa_err, 7.7+params.toa_err),3)
 
