@@ -12,9 +12,9 @@ from astropy.table import Table
 
 # Parameters for Injections:
 
-n_injections = 50 # Number of injections
-mass1 = (11,13) # Small interval around actual mass value
-mass2 = (6,8)
+n_injections = 5 # Number of injections
+mass1 = (34,36) # Small interval around actual mass value
+mass2 = (28,30)
 snr_range = (8,25)
 
 # Create directory to save data:
@@ -78,8 +78,8 @@ for i in range(n_injections):
 
 	if i % 10 == 0:
 		print("{} out of {} injection frames NNETFIXED successfully!".format(i,n_injections))
-		np.savetxt(os.path.abspath("injections/{0}/{1}/reconstruct_{2}.txt".format(params.label, data_dir, i/10),PredictData)
-		np.savetxt(os.path.abspath("injections/{0}/{1}/original_{2}.txt".format(params.label, data_dir, i/10),OriginalData)
+		np.savetxt(os.path.abspath("injections/{0}/{1}/reconstruct_{2}.txt".format(params.label, data_dir, i/10)),PredictData)
+		np.savetxt(os.path.abspath("injections/{0}/{1}/original_{2}.txt".format(params.label, data_dir, i/10)),OriginalData)
 
 np.savetxt(os.path.abspath("injections/{0}/{1}/Inj_snr.csv".format(params.label,data_dir)),SNR_array, fmt='%1.3f',delimiter=',',header="Index, Original, Gated, Reconstructed")
 np.savetxt(os.path.abspath("injections/{0}/{1}/Inj_chisq.csv".format(params.label,data_dir)),chisq_array,fmt='%1.3f',delimiter=',',header="Index, Original, Gated, Reconstructed")

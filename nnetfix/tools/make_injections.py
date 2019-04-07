@@ -15,6 +15,8 @@ def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.dura
 	"""
 	Injects a signal into a given interferometer having given component masses using aLIGO coloured noise. The extrinsic parameters, viz. sky localization, phase and polarization 	       are randomized. The merger time is set at 3.0 seconds before the end of the data segment.
 	"""
+	
+	dur += 1
 
 	detector = Detector('{}'.format(IFO))
 	coa_phase = np.random.uniform(-np.pi/2,np.pi/2)
@@ -26,10 +28,10 @@ def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.dura
 		 delta_t=1.0/sample_rate,
 		 f_lower=f_lower)
 
-	hp.start_time += end_time + 2.8
-	hc.start_time += end_time + 2.8
+	hp.start_time += end_time + 3.5
+	hc.start_time += end_time + 3.5
 
-	toa = 7.2
+	toa = 7.7
 
 	declination = np.random.uniform(-np.pi/2,np.pi/2)
 	right_ascension = np.random.uniform(0,2*np.pi)
@@ -57,8 +59,9 @@ def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.dura
 	fs += signal.cyclic_time_shift(toa) / sig * snr
 
 	dataseg = fs.to_timeseries()
-
-	#dataseg = highpass(dataseg2, 30)
+	
+	dataseg = dataseg.whiten(1,1)
+	dataseg = highpass(dataseg, params.f_lower)
 	#dataseg = lowpass_fir(dataseg1,600,512)
 
 	param_list = [right_ascension, declination, polarization, snr]
@@ -72,14 +75,16 @@ def inject_noise(dur = params.duration, sample_rate = params.sample_rate, trigge
 	"""
 	Returns a timeseries segment of aLIGO coloured noise of the given duration and sampled at the given rate.
 	"""
-
+	dur += 1
 	# Generate noise from the aLIGO PSD:
 	psd = pycbc.psd.aLIGOZeroDetLowPower(dur * int(sample_rate)  + 1, 1.0/dur, dur)
 
 	ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(10000), low_frequency_cutoff=15)
 	ts = resample_to_delta_t(ts, 1.0/sample_rate)
 	#print ts.duration
-	ts.start_time = trigger_time - 7.2
+	ts.start_time = trigger_time - 7.7
+	ts = ts.whiten(1,1)
+	ts = highpass(ts,params.f_lower)
 	noise_seg = ts
 	#ts1 = highpass(ts, 35)
 	#noise_seg = lowpass_fir(ts1,800,512)
