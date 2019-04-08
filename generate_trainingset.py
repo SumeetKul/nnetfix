@@ -44,12 +44,12 @@ def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx
 		# Generate noise from the aLIGO PSD:
 		psd = pycbc.psd.aLIGOZeroDetLowPower(data_duration * int(sample_rate)  + 1, 1.0/data_duration, data_duration)
 
-		ts = noise_from_string("aLIGOZeroDetLowPower", 0, data_duration, seed=np.random.randint(20000,50000), low_frequency_cutoff=15)
+		ts = noise_from_string("aLIGOZeroDetLowPower", 0, data_duration, seed=np.random.randint(20000,50000), low_frequency_cutoff=10)
 		ts = resample_to_delta_t(ts, 1.0/sample_rate)
 		
 		# Whiten and bandpass:
 		ts = ts.whiten(1,1)
-		ts = highpass(ts, 30)
+		ts = highpass(ts, params.f_lower)
 		
 		waveform_arr[i] = ts
 
@@ -85,7 +85,7 @@ def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx
 	        # Add noise:
 	        psd = pycbc.psd.aLIGOZeroDetLowPower(data_duration * sample_rate + 1, 1.0/data_duration, f_lower)
 
-	        ts = noise_from_string("aLIGOZeroDetLowPower", 0, data_duration, seed=index, low_frequency_cutoff=30)
+	        ts = noise_from_string("aLIGOZeroDetLowPower", 0, data_duration, seed=index, low_frequency_cutoff=10)
 	        ts = resample_to_delta_t(ts, 1.0/sample_rate)
 	        #print ts.duration
 	        ts.start_time = end_time - data_duration

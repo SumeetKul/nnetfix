@@ -45,7 +45,7 @@ def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.dura
 	# Add noise:
 	psd = pycbc.psd.aLIGOZeroDetLowPower(dur * int(sample_rate) + 1, 1.0/dur, f_lower)
 
-	ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(50000,450000), low_frequency_cutoff=30)
+	ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(50000,450000), low_frequency_cutoff=10)
 	ts = resample_to_delta_t(ts, 1.0/sample_rate)
 	#print ts.duration
 	ts.start_time = end_time - dur
@@ -79,7 +79,7 @@ def inject_noise(dur = params.duration, sample_rate = params.sample_rate, trigge
 	# Generate noise from the aLIGO PSD:
 	psd = pycbc.psd.aLIGOZeroDetLowPower(dur * int(sample_rate)  + 1, 1.0/dur, dur)
 
-	ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(10000), low_frequency_cutoff=15)
+	ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(10000), low_frequency_cutoff=10)
 	ts = resample_to_delta_t(ts, 1.0/sample_rate)
 	#print ts.duration
 	ts.start_time = trigger_time - 7.7
