@@ -95,7 +95,7 @@ def prepare_Y_data(TrainingData, tg = glitch_params['tg'], glitch_dur = glitch_p
     y_glitch = tuck*y_glitch
 
     y_glitch[-(int(params.noise_fraction*n_samples)):] = np.zeros(glitch_dur)
-    print(int(params.noise_fraction*n_samples))
+    #print(int(params.noise_fraction*n_samples))
     return y_glitch
 
 

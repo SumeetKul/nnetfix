@@ -11,7 +11,7 @@ from pycbc.filter import matched_filter
 import pycbc.vetoes
 import pycbc.types
 
-def calculate_snr(timeseries, m1, m2, apx = params.apx, dur = params.duration, sample_rate = params.sample_rate, f_low = params.f_lower):
+def calculate_snr(timeseries, m1, m2, apx = params.apx, dur = params.duration, sample_rate = params.sample_rate, f_low = params.f_lower, psd_stride=2):
 
 	"""
 	Calculates the peak snr value and the time corresponding to the peak snr. Returns the SNR time series.
@@ -27,11 +27,11 @@ def calculate_snr(timeseries, m1, m2, apx = params.apx, dur = params.duration, s
         conditioned = strain.crop(1,1)  
 		
 	# Calculate PSD:
-	psd = conditioned.psd(2)
+	psd = conditioned.psd(psd_stride)
 	psd = interpolate(psd, conditioned.delta_f)
 	
-	psd = inverse_spectrum_truncation(psd, 2 * conditioned.sample_rate,
-                                  low_frequency_cutoff=f_low)
+	psd = inverse_spectrum_truncation(psd, psd_stride * conditioned.sample_rate,
+                                  low_frequency_cutoff=35)
 	
 	# Generate the template for matched filtering:
 	hp, _ = get_td_waveform(approximant=apx,

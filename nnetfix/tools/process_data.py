@@ -35,7 +35,7 @@ def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.
 	GWdata = TimeSeries.fetch_open_data(IFO, gpstime - 20,  gpstime + 10, sample_rate=sample_rate)
 	GWdata = GWdata.to_pycbc()
 	GWdata = GWdata.whiten(4,4)
-	GWdata = highpass(GWdata,params.f_lower)
+	#GWdata = highpass(GWdata,params.f_lower)
 	GWdata = TimeSeries.from_pycbc(GWdata)
 	return GWdata
 

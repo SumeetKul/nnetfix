@@ -45,7 +45,7 @@ def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.dura
 	# Add noise:
 	psd = pycbc.psd.aLIGOZeroDetLowPower(dur * int(sample_rate) + 1, 1.0/dur, f_lower)
 
-	ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(50000,450000), low_frequency_cutoff=10)
+	ts = noise_from_string("aLIGOZeroDetLowPower", 0, dur, seed=np.random.randint(50000,450000), low_frequency_cutoff=15)
 	ts = resample_to_delta_t(ts, 1.0/sample_rate)
 	#print ts.duration
 	ts.start_time = end_time - dur
@@ -61,8 +61,8 @@ def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.dura
 	dataseg = fs.to_timeseries()
 	
 	dataseg = dataseg.whiten(1,1)
-	dataseg = highpass(dataseg, params.f_lower)
-	#dataseg = lowpass_fir(dataseg1,600,512)
+	#dataseg = highpass(dataseg, params.f_lower)
+	#dataseg = lowpass_fir(dataseg,800,512)
 
 	param_list = [right_ascension, declination, polarization, snr]
 

@@ -76,12 +76,12 @@ with open(os.path.join(os.path.abspath('models/{}'.format(params.label)),scaler_
 
 
 # Reconstruct the testing set:
-NNet_prediction =  mlp.NNetfix(nnetmodel,X_test,y_test)
-OriginalData, CutData, PredictData = mlp.reconstruct_testing_set(NNet_prediction, X_test_full, y_test)
+#NNet_prediction =  mlp.NNetfix(nnetmodel,X_test,y_test)
+#OriginalData, CutData, PredictData = mlp.reconstruct_testing_set(NNet_prediction, X_test_full, y_test)
 # Save it to check results.
-np.savetxt("{}/OriginalData.txt".format(params.outdir),OriginalData)
-np.savetxt("{}/CutData.txt".format(params.outdir),CutData)
-np.savetxt("{}/PredictData.txt".format(params.outdir),PredictData)
+#np.savetxt("{}/OriginalData.txt".format(params.outdir),OriginalData)
+#np.savetxt("{}/CutData.txt".format(params.outdir),CutData)
+#np.savetxt("{}/PredictData.txt".format(params.outdir),PredictData)
 
 
 ########### NNETFIX has now been trained. Now we use it to reconstruct the real GW data affected by the glitch. ##############
