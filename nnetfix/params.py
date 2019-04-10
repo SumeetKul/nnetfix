@@ -37,7 +37,7 @@ multiplier = 50
 duration = 10
 sample_rate = 4096
 f_lower = 30
-f_high = 600
+f_high = 800
 # Fraction of Trainingset to be comprised of pure noise samples:
 noise_fraction = 0.1
 
@@ -45,10 +45,10 @@ noise_fraction = 0.1
 ### 3: Glitch Information:
 
 # Time before merger: (in sec., defined as duration between the END time of the gating and the trigger time)
-glitch_tbm = 0.02
+glitch_tbm = 0.026
 
 # Duration of the glitch (seconds):
-glitch_dur = 0.03
+glitch_dur = 0.073
 
 # GPSTime of the glitch: (Currently defined as the START point of the gating we have to do due to the glitch)
 glitch_t = gpstime - glitch_tbm - glitch_dur

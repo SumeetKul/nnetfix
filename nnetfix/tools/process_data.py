@@ -41,11 +41,11 @@ def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.
 	# whiten
 	# white_strain = (GWdata.to_frequencyseries() / psd ** 0.5).to_timeseries()
 	white_strain = GWdata.whiten(2,2)
-
+	
 	crop_strain = white_strain.crop(2,2)
-	
-	
-	#GWdata = highpass(GWdata,params.f_lower)
+
+	crop_strain = highpass(crop_strain,params.f_lower)
+	#crop_strain = lowpass_fir(crop_strain, 800, 512)
 	GW_whit_strain = TimeSeries.from_pycbc(crop_strain)
 	return GW_whit_strain
 
@@ -82,6 +82,10 @@ def crop_for_nnetfix(timeseries, gpstime =  params.gpstime, sample_rate = params
 	Crops the data into a 10-sec. segment containing the signal that NNETFIX can work on to reconstruct.
 	"""
 	strain_ts = timeseries.to_pycbc()
+
+	#strain_ts = highpass(strain_ts,params.f_lower)
+	#strain_ts = lowpass_fir(strain_ts,800,512)
+
 	TOA = gpstime 
 
 	start_time = strain_ts.start_time
