@@ -12,7 +12,7 @@ from astropy.table import Table
 
 # Parameters for Injections:
 
-n_injections = 32 # Number of injections
+n_injections = 100 # Number of injections
 mass1 = (34,36) # Small interval around actual mass value
 mass2 = (28,30)
 snr_range = (8,25)

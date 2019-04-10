@@ -49,7 +49,7 @@ def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx
 		
 		# Whiten and bandpass:
 		ts = ts.whiten(1,1)
-		#ts = highpass(ts, params.f_lower)
+		ts = highpass(ts, params.f_lower)
 		#ts = lowpass_fir(ts,800,512)
 		waveform_arr[i] = ts
 
@@ -103,7 +103,7 @@ def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx
 
 		# Whiten and high-pass:
 	        dataseg = dataseg.whiten(1,1)
-		#dataseg = highpass(dataseg, params.f_lower)
+		dataseg = highpass(dataseg, params.f_lower)
 	        #dataseg = lowpass_fir(dataseg, 800, 512) 
 	        waveform_arr[i] = dataseg
              

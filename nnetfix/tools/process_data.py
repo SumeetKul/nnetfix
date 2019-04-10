@@ -1,4 +1,4 @@
-##### This module includes tools to process real GW data to turn it into a format NNETFIX can work with. This includes bandpassing, cleaning spectral lines and cropping to NNETFIX's default length. ##########
+##### This module includes tools to process real GW d`ata to turn it into a format NNETFIX can work with. This includes bandpassing, cleaning spectral lines and cropping to NNETFIX's default length. ##########
 
 import numpy as np
 import sys
@@ -12,7 +12,7 @@ import pycbc.psd
 from pycbc.noise.reproduceable import noise_from_string
 from pycbc.filter import sigma, resample_to_delta_t, highpass, lowpass_fir, notch_fir, highpass_fir
 from pycbc.frame import read_frame, write_frame
-
+from pycbc.psd import welch, interpolate
 from nnetfix import params
 from ligotimegps import LIGOTimeGPS
 
@@ -34,44 +34,54 @@ def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.
 
 	GWdata = TimeSeries.fetch_open_data(IFO, gpstime - 20,  gpstime + 10, sample_rate=sample_rate)
 	GWdata = GWdata.to_pycbc()
-	GWdata = GWdata.whiten(4,4)
+	
+	# Calculate the noise spectrum
+	# psd = interpolate(welch(GWdata), 1.0 / GWdata.duration)
+
+	# whiten
+	# white_strain = (GWdata.to_frequencyseries() / psd ** 0.5).to_timeseries()
+	white_strain = GWdata.whiten(2,2)
+
+	crop_strain = white_strain.crop(2,2)
+	
+	
 	#GWdata = highpass(GWdata,params.f_lower)
-	GWdata = TimeSeries.from_pycbc(GWdata)
-	return GWdata
+	GW_whit_strain = TimeSeries.from_pycbc(crop_strain)
+	return GW_whit_strain
+
+
+#
+#
+#def clean(timeseries, spec_lines, tag = params.tag, f_low=params.f_lower, f_high=params.f_high):
+#
+#	"""
+#	Cleans data by removing spectral lines; bandpasses the data segment.
+#	"""
+#
+#	if tag == 'C00':
+#
+#		bp = filter_design.bandpass(f_low, f_high, 4096.)
+##		notches = [filter_design.notch(f, 4096.) for f in spec_lines]
+#		zpk = filter_design.concatenate_zpks(bp, *notches)
+#
+#		clean_timeseries = timeseries.filter(zpk, filtfilt=True)
+#
+#	elif tag == 'CLN':
+#
+#		bp_timeseries = timeseries.notch(60).bandpass(f_low,f_high)
+#		clean_timeseries = bp_timeseries
+#
+#	return clean_timeseries
+#
 
 
 
-
-def clean(timeseries, spec_lines, tag = params.tag, f_low=params.f_lower, f_high=params.f_high):
-
-	"""
-	Cleans data by removing spectral lines; bandpasses the data segment.
-	"""
-
-	if tag == 'C00':
-
-		bp = filter_design.bandpass(f_low, f_high, 4096.)
-		notches = [filter_design.notch(f, 4096.) for f in spec_lines]
-		zpk = filter_design.concatenate_zpks(bp, *notches)
-
-		clean_timeseries = timeseries.filter(zpk, filtfilt=True)
-
-	elif tag == 'CLN':
-
-		bp_timeseries = timeseries.notch(60).bandpass(f_low,f_high)
-		clean_timeseries = bp_timeseries
-
-	return clean_timeseries
-
-
-
-
-def crop_for_nnetfix(clean_timeseries, gpstime =  params.gpstime, sample_rate = params.sample_rate):
+def crop_for_nnetfix(timeseries, gpstime =  params.gpstime, sample_rate = params.sample_rate):
 
 	"""
 	Crops the data into a 10-sec. segment containing the signal that NNETFIX can work on to reconstruct.
 	"""
-	strain_ts = clean_timeseries.to_pycbc()
+	strain_ts = timeseries.to_pycbc()
 	TOA = gpstime 
 
 	start_time = strain_ts.start_time

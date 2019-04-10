@@ -61,7 +61,7 @@ def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.dura
 	dataseg = fs.to_timeseries()
 	
 	dataseg = dataseg.whiten(1,1)
-	#dataseg = highpass(dataseg, params.f_lower)
+	dataseg = highpass(dataseg, params.f_lower)
 	#dataseg = lowpass_fir(dataseg,800,512)
 
 	param_list = [right_ascension, declination, polarization, snr]
@@ -86,7 +86,7 @@ def inject_noise(dur = params.duration, sample_rate = params.sample_rate, trigge
 	ts = ts.whiten(1,1)
 	ts = highpass(ts,params.f_lower)
 	noise_seg = ts
-	#ts1 = highpass(ts, 35)
+	ts1 = highpass(ts, 35)
 	#noise_seg = lowpass_fir(ts1,800,512)
 
 	return noise_seg
