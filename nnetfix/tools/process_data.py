@@ -44,8 +44,8 @@ def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.
 	
 	crop_strain = white_strain.crop(2,2)
 
-	crop_strain = highpass(crop_strain,params.f_lower)
-	#crop_strain = lowpass_fir(crop_strain, 800, 512)
+	# crop_strain = highpass(crop_strain,params.f_lower)
+	# crop_strain = lowpass_fir(crop_strain, 800, 512)
 	GW_whit_strain = TimeSeries.from_pycbc(crop_strain)
 	return GW_whit_strain
 
