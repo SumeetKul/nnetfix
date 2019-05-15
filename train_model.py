@@ -55,12 +55,12 @@ print("NNetfix model trained.")
 
 # # SAVE ML_model using pickle
 
-pkl_filename = "model_{}.pkl".format(params.label)
+pkl_filename = "model_2_{}.pkl".format(params.label)
 with open(os.path.join(os.path.abspath('models/{}'.format(params.label)),pkl_filename), 'wb') as file:
      pickle.dump(nnetmodel, file)
      print("model saved successfully")
 #
-scaler_filename = "scaler_{}.pkl".format(params.label)
+scaler_filename = "scaler_2_{}.pkl".format(params.label)
 with open(os.path.join(os.path.abspath('models/{}'.format(params.label)),scaler_filename), 'wb') as file:
      pickle.dump(scaler, file)
      print("scaler saved successfully")

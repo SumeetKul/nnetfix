@@ -32,7 +32,9 @@ def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.
 	Loads and whitens 30s. of data including the event corresponding to the given gpstime.
 	"""
 
-	GWdata = TimeSeries.fetch_open_data(IFO, gpstime - 20,  gpstime + 10, sample_rate=sample_rate)
+	#GWdata = TimeSeries.fetch_open_data(IFO, gpstime - 20,  gpstime + 10, sample_rate=sample_rate)
+	data = TimeSeries.get('{}:GDS-CALIB_STRAIN'.format(IFO), gpstime - 20, gpstime + 10)
+	GWdata = data.resample(sample_rate)
 	GWdata = GWdata.to_pycbc()
 	
 	# Calculate the noise spectrum
