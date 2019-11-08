@@ -47,42 +47,42 @@ chisq_array = np.zeros((n_injections, 4))
 for i in range(n_injections):
 
 
-	m1 = mass1
-	m2 = mass2
-#	m1 = np.round(np.random.uniform(mass1[0],mass1[1]),2)
-#	m2 = np.round(np.random.uniform(mass2[0],mass2[1]),2)
-	snr = np.round(np.random.uniform(snr_range[0],snr_range[1]),2)
-	
-	testseg, inj_arr = mk_inj.inject_signal(m1, m2, snr, 'L1')
-	
-	inj_param_array[i] = [i, m1, m2] + inj_arr
-	X_testdata_full, X_testdata, y_testglitch = mlp.process_dataframe(testseg, scaler)
+    m1 = mass1
+    m2 = mass2
+#    m1 = np.round(np.random.uniform(mass1[0],mass1[1]),2)
+#    m2 = np.round(np.random.uniform(mass2[0],mass2[1]),2)
+    snr = np.round(np.random.uniform(snr_range[0],snr_range[1]),2)
+    
+    testseg, inj_arr = mk_inj.inject_signal(m1, m2, snr, 'L1')
+    
+    inj_param_array[i] = [i, m1, m2] + inj_arr
+    X_testdata_full, X_testdata, y_testglitch = mlp.process_dataframe(testseg, scaler)
 
-	NNet_prediction = mlp.NNetfix(nnetmodel, X_testdata, y_testglitch)
+    NNet_prediction = mlp.NNetfix(nnetmodel, X_testdata, y_testglitch)
 
-	OriginalData, CutData, PredictData = mlp.reconstruct_frame(NNet_prediction, scaler, X_testdata_full, y_testglitch)
-	
-	
-	snr_orig, snrp_orig, snrp_loc_orig = metrics.calculate_snr(OriginalData, m1, m2)
+    OriginalData, CutData, PredictData = mlp.reconstruct_frame(NNet_prediction, scaler, X_testdata_full, y_testglitch)
+    
+    
+    snr_orig, snrp_orig, snrp_loc_orig = metrics.calculate_snr(OriginalData, m1, m2)
         snr, snrp, snrp_loc = metrics.calculate_snr(testseg, m1, m2)
-	snr_cut, snrp_cut, snrp_loc_cut = metrics.calculate_snr(CutData, m1, m2)
-	snr_pred, snrp_pred, snrp_loc_pred = metrics.calculate_snr(PredictData, m1, m2)
+    snr_cut, snrp_cut, snrp_loc_cut = metrics.calculate_snr(CutData, m1, m2)
+    snr_pred, snrp_pred, snrp_loc_pred = metrics.calculate_snr(PredictData, m1, m2)
 
-	
-	SNR_array[i] = np.array([i, snrp_orig, snrp_cut, snrp_pred])
+    
+    SNR_array[i] = np.array([i, snrp_orig, snrp_cut, snrp_pred])
 
-	chisq_orig, chisq_min_orig = metrics.calculate_chisq(OriginalData, m1, m2, snrp_loc_orig)
-	chisq, chisq_min = metrics.calculate_chisq(testseg, m1, m2, snrp_loc)
-	chisq_cut, chisq_min_cut = metrics.calculate_chisq(CutData, m1, m2, snrp_loc_cut)
-	chisq_pred, chisq_min_pred = metrics.calculate_chisq(PredictData, m1, m2, snrp_loc_pred)
+    chisq_orig, chisq_min_orig = metrics.calculate_chisq(OriginalData, m1, m2, snrp_loc_orig)
+    chisq, chisq_min = metrics.calculate_chisq(testseg, m1, m2, snrp_loc)
+    chisq_cut, chisq_min_cut = metrics.calculate_chisq(CutData, m1, m2, snrp_loc_cut)
+    chisq_pred, chisq_min_pred = metrics.calculate_chisq(PredictData, m1, m2, snrp_loc_pred)
 
-	
-	chisq_array[i] = [i, chisq_min_orig, chisq_min_cut, chisq_min_pred]
+    
+    chisq_array[i] = [i, chisq_min_orig, chisq_min_cut, chisq_min_pred]
 
-	if i % 10 == 0:
-		print("{} out of {} injection frames NNETFIXED successfully!".format(i,n_injections))
-		np.savetxt(os.path.abspath("injections/{0}/{1}/reconstruct_{2}.txt".format(params.label, data_dir, i/10)),PredictData)
-		np.savetxt(os.path.abspath("injections/{0}/{1}/original_{2}.txt".format(params.label, data_dir, i/10)),OriginalData)
+    if i % 10 == 0:
+        print("{} out of {} injection frames NNETFIXED successfully!".format(i,n_injections))
+        np.savetxt(os.path.abspath("injections/{0}/{1}/reconstruct_{2}.txt".format(params.label, data_dir, i/10)),PredictData)
+        np.savetxt(os.path.abspath("injections/{0}/{1}/original_{2}.txt".format(params.label, data_dir, i/10)),OriginalData)
 
 np.savetxt(os.path.abspath("injections/{0}/{1}/Inj_snr.csv".format(params.label,data_dir)),SNR_array, fmt='%1.3f',delimiter=',',header="Index, Original, Gated, Reconstructed")
 np.savetxt(os.path.abspath("injections/{0}/{1}/Inj_chisq.csv".format(params.label,data_dir)),chisq_array,fmt='%1.3f',delimiter=',',header="Index, Original, Gated, Reconstructed")

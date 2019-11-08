@@ -28,86 +28,90 @@ spec_lines['H1_lines'] = [35.9,36.7,37.3,60,120,180,299.6,299.4,300.5,300.,302.,
 
 def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.sample_rate):  # In future: Add parser for event name.
 
-	"""
-	Loads and whitens 30s. of data including the event corresponding to the given gpstime.
-	"""
+    """
+    Loads and whitens 30s. of data including the event corresponding to the given gpstime.
+    """
 
-	#GWdata = TimeSeries.fetch_open_data(IFO, gpstime - 20,  gpstime + 10, sample_rate=sample_rate)
-	data = TimeSeries.get('{}:GDS-CALIB_STRAIN'.format(IFO), gpstime - 20, gpstime + 10)
-	GWdata = data.resample(sample_rate)
-	GWdata = GWdata.to_pycbc()
-	
-	# Calculate the noise spectrum
-	# psd = interpolate(welch(GWdata), 1.0 / GWdata.duration)
+    #GWdata = TimeSeries.fetch_open_data(IFO, gpstime - 20,  gpstime + 10, sample_rate=sample_rate)
+    if params.open_data:
+        data = TimeSeries.fetch_open_data('{}'.format(IFO), gpstime - 20, gpstime + 10)
+    else:
+        data = TimeSeries.get('{}:GDS-CALIB_STRAIN'.format(IFO), gpstime - 20, gpstime + 10)
+    #data = TimeSeries.fetch_open_data('{}'.format(IFO), gpstime - 20, gpstime + 10)
+    GWdata = data.resample(sample_rate)
+    GWdata = GWdata.to_pycbc()
+    
+    # Calculate the noise spectrum
+    # psd = interpolate(welch(GWdata), 1.0 / GWdata.duration)
 
-	# whiten
-	# white_strain = (GWdata.to_frequencyseries() / psd ** 0.5).to_timeseries()
-	white_strain = GWdata.whiten(2,2)
-	
-	crop_strain = white_strain.crop(2,2)
+    # whiten
+    # white_strain = (GWdata.to_frequencyseries() / psd ** 0.5).to_timeseries()
+    white_strain = GWdata.whiten(2,2)
+    
+    crop_strain = white_strain.crop(2,2)
 
-	# crop_strain = highpass(crop_strain,params.f_lower)
-	# crop_strain = lowpass_fir(crop_strain, 800, 512)
-	GW_whit_strain = TimeSeries.from_pycbc(crop_strain)
-	return GW_whit_strain
+    # crop_strain = highpass(crop_strain,params.f_lower)
+    # crop_strain = lowpass_fir(crop_strain, 800, 512)
+    GW_whit_strain = TimeSeries.from_pycbc(crop_strain)
+    return GW_whit_strain
 
 
 #
 #
 #def clean(timeseries, spec_lines, tag = params.tag, f_low=params.f_lower, f_high=params.f_high):
 #
-#	"""
-#	Cleans data by removing spectral lines; bandpasses the data segment.
-#	"""
+#    """
+#    Cleans data by removing spectral lines; bandpasses the data segment.
+#    """
 #
-#	if tag == 'C00':
+#    if tag == 'C00':
 #
-#		bp = filter_design.bandpass(f_low, f_high, 4096.)
-##		notches = [filter_design.notch(f, 4096.) for f in spec_lines]
-#		zpk = filter_design.concatenate_zpks(bp, *notches)
+#        bp = filter_design.bandpass(f_low, f_high, 4096.)
+##        notches = [filter_design.notch(f, 4096.) for f in spec_lines]
+#        zpk = filter_design.concatenate_zpks(bp, *notches)
 #
-#		clean_timeseries = timeseries.filter(zpk, filtfilt=True)
+#        clean_timeseries = timeseries.filter(zpk, filtfilt=True)
 #
-#	elif tag == 'CLN':
+#    elif tag == 'CLN':
 #
-#		bp_timeseries = timeseries.notch(60).bandpass(f_low,f_high)
-#		clean_timeseries = bp_timeseries
+#        bp_timeseries = timeseries.notch(60).bandpass(f_low,f_high)
+#        clean_timeseries = bp_timeseries
 #
-#	return clean_timeseries
+#    return clean_timeseries
 #
 
 
 
 def crop_for_nnetfix(timeseries, gpstime =  params.gpstime, sample_rate = params.sample_rate):
 
-	"""
-	Crops the data into a 10-sec. segment containing the signal that NNETFIX can work on to reconstruct.
-	"""
-	strain_ts = timeseries.to_pycbc()
+    """
+    Crops the data into a 10-sec. segment containing the signal that NNETFIX can work on to reconstruct.
+    """
+    strain_ts = timeseries.to_pycbc()
 
-	#strain_ts = highpass(strain_ts,params.f_lower)
-	#strain_ts = lowpass_fir(strain_ts,800,512)
+    #strain_ts = highpass(strain_ts,params.f_lower)
+    #strain_ts = lowpass_fir(strain_ts,800,512)
 
-	TOA = gpstime 
+    TOA = gpstime 
 
-	start_time = strain_ts.start_time
+    start_time = strain_ts.start_time
 
-	sample_trig_time = float(LIGOTimeGPS(TOA - start_time)) 
+    sample_trig_time = float(LIGOTimeGPS(TOA - start_time)) 
 
-	start = int(np.rint(sample_trig_time*sample_rate)) - int(7*sample_rate)
-	end = int(np.rint(sample_trig_time*sample_rate)) + int(3*sample_rate)
+    start = int(np.rint(sample_trig_time*sample_rate)) - int(7*sample_rate)
+    end = int(np.rint(sample_trig_time*sample_rate)) + int(3*sample_rate)
 
-	inj_segment = strain_ts[start:end]
+    inj_segment = strain_ts[start:end]
 
-	return inj_segment, start, end
+    return inj_segment, start, end
 
-	
+    
 def rejoin_frame(frame_array, raw_timeseries, start, end):
-	
-	
-	filled_timeseries = raw_timeseries.copy()
-	filled_timeseries[start:end] = frame_array
+    
+    
+    filled_timeseries = raw_timeseries.copy()
+    filled_timeseries[start:end] = frame_array
 
-	return filled_timeseries
+    return filled_timeseries
 
 
