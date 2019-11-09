@@ -15,6 +15,7 @@ from pycbc.frame import read_frame, write_frame
 from pycbc.psd import welch, interpolate
 from nnetfix import params
 from ligotimegps import LIGOTimeGPS
+from scipy.interpolate import interp1d
 
 # GPStime of the merger:
 gpstime = params.gpstime
@@ -26,7 +27,7 @@ spec_lines = dict()
 spec_lines['L1_lines'] = [33.7,34.7,35.3,60,120,180,307.3,307.5,315.1,333.3,612.5,615.]
 spec_lines['H1_lines'] = [35.9,36.7,37.3,60,120,180,299.6,299.4,300.5,300.,302.,302.22,303.31,331.9,504.0,508.5,599.14,599.42,612.5]
 
-def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.sample_rate):  # In future: Add parser for event name.
+def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.sample_rate, return_whiten_psd = False):  # In future: Add parser for event name.
 
     """
     Loads and whitens 30s. of data including the event corresponding to the given gpstime.
@@ -46,15 +47,26 @@ def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.
 
     # whiten
     # white_strain = (GWdata.to_frequencyseries() / psd ** 0.5).to_timeseries()
-    white_strain = GWdata.whiten(2,2)
+    white_strain, whiten_psd = GWdata.whiten(2,2, return_psd = return_whiten_psd)
     
     crop_strain = white_strain.crop(2,2)
 
     # crop_strain = highpass(crop_strain,params.f_lower)
     # crop_strain = lowpass_fir(crop_strain, 800, 512)
     GW_whit_strain = TimeSeries.from_pycbc(crop_strain)
-    return GW_whit_strain
+    if return_whiten_psd:
+        return GW_whit_strain, whiten_psd
+    else:
+        return GW_whit_strain
 
+def recolor_pycbc_timeseries(psd, whitened_pycbc_timeseries):
+    """This method reproduced from code from Kentaro Mogushi with permission"""
+    whitened_fft = whitened_pycbc_timeseries.fft()
+    psd_interpolant = interp1d(psd.get_sample_frequencies().data, psd.data)
+    new_psd = psd_interpolant(whitened_fft.frequencies.value)
+    recolored_fft = whitened_fft * np.sqrt(new_psd)
+    recolored_timeseries = recolored_fft.ifft()
+    return recolored_timeseries
 
 #
 #

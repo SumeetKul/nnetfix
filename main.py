@@ -90,7 +90,8 @@ with open(os.path.join(os.path.abspath('models/{}'.format(params.label)),scaler_
 
 GWData = dict()
 
-strain_raw = process_data.load_data(params.IFO)
+#strain_raw = process_data.load_data(params.IFO)
+strain_raw, whiten_psd = process_data.load_data(params.IFO, return_whiten_psd=True)
 print("{} Data loaded".format(params.label))
 #strain_clean = process_data.clean(strain_raw, spec_lines = process_data.spec_lines['{}_lines'.format(params.IFO)])
 #print("{} Data cleaned".format(params.label))
@@ -139,3 +140,21 @@ print("{} NNETFIXED. GREAT SUCCESS!".format(params.label))
 
 print(datetime.datetime.now().time())
 #run_commandline("./generate_trainingset.py 13")
+
+print("Recoloring whitened data and saving...")
+
+print("Recoloring...")
+recolored_predict_data = process_data.recolor_pycbc_timeseries(PredictData, whiten_psd)
+recolored_cut_data = process_data.recolor_pycbc_timeseries(CutData, whiten_psd)
+recolored_original_data = process_data.recolor_pycbc_timeseries(OriginalData, whiten_psd)
+
+print("Processing...")
+strain_reconstructed_recolored = process_data.rejoin_frame(recolored_predict_data, strain_raw, start, end)
+strain_gated_recolored = process_data.rejoin_frame(recolored_cut_data, strain_raw, start, end)
+strain_original_recolored = process_data.rejoin_frame(recolored_original_data, strain_raw, start, end)
+
+print("Saving...")
+strain_reconstructed.write(os.path.join(params.outdir,"{}_{}_reconstructed_recolored.gwf".format(params.IFO,params.label)))
+strain_gated.write(os.path.join(params.outdir,"{}_{}_gated_recolored.gwf".format(params.IFO,params.label)))
+strain_raw.write(os.path.join(params.outdir,"{}_{}_original_recolored.gwf".format(params.IFO,params.label)))
+print("Frames saved!")
