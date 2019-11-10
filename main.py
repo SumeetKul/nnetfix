@@ -144,9 +144,9 @@ print(datetime.datetime.now().time())
 print("Recoloring whitened data and saving...")
 
 print("Recoloring...")
-recolored_predict_data = process_data.recolor_pycbc_timeseries(PredictData, whiten_psd)
-recolored_cut_data = process_data.recolor_pycbc_timeseries(CutData, whiten_psd)
-recolored_original_data = process_data.recolor_pycbc_timeseries(OriginalData, whiten_psd)
+recolored_predict_data = process_data.recolor_gwpy_timeseries(PredictData, whiten_psd)
+recolored_cut_data = process_data.recolor_gwpy_timeseries(CutData, whiten_psd)
+recolored_original_data = process_data.recolor_gwpy_timeseries(OriginalData, whiten_psd)
 
 print("Processing...")
 strain_reconstructed_recolored = process_data.rejoin_frame(recolored_predict_data, strain_raw, start, end)

@@ -59,13 +59,39 @@ def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.
     else:
         return GW_whit_strain
 
-def recolor_pycbc_timeseries(psd, whitened_pycbc_timeseries):
+def recolor_gwpy_timeseries(pycbc_psd, whitened_gwpy_timeseries):
     """This method reproduced from code from Kentaro Mogushi with permission"""
-    whitened_fft = whitened_pycbc_timeseries.fft()
-    psd_interpolant = interp1d(psd.get_sample_frequencies().data, psd.data)
+
+    # Make PSD
+    whitened_fft = whitened_gwpy_timeseries.fft()
+
+    # interpolate psd
+    psd_interpolant = interp1d(pycbc_psd.get_sample_frequencies().data, pycbc_psd.data)
     new_psd = psd_interpolant(whitened_fft.frequencies.value)
+
+    # recolor psd
     recolored_fft = whitened_fft * np.sqrt(new_psd)
+
+    # generate recolored time series
     recolored_timeseries = recolored_fft.ifft()
+    return recolored_timeseries
+
+def recolor_pycbc_timeseries(pycbc_psd, whitened_pycbc_timeseries):
+    """This method reproduced from code from Kentaro Mogushi with permission"""
+    
+    # Make PSD
+    #whitened_fft = whitened_pycbc_timeseries.fft()
+    whitened_fft_pycbc = whitened_pycbc_timeseries.to_frequencyseries()
+
+    # interpolate psd
+    psd_interpolant = interp1d(pycbc_psd.get_sample_frequencies().data, pycbc_psd.data)
+    new_psd = psd_interpolant(whitened_fft_pycbc.frequencies.value)
+
+    # recolor psd
+    recolored_fft = whitened_fft_pycbc * np.sqrt(new_psd)
+
+    # generate recolored time series
+    recolored_timeseries = recolored_fft.to_timeseries()
     return recolored_timeseries
 
 #
