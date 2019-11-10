@@ -50,7 +50,7 @@ def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.
 
     # whiten
     # white_strain = (GWdata.to_frequencyseries() / psd ** 0.5).to_timeseries()
-    white_strain, whiten_psd = GWdata.whiten(2,2, return_psd = return_whiten_psd)
+    white_strain, whiten_psd = GWdata.whiten(2,2, return_psd = True)
     
     crop_strain = white_strain.crop(2,2)
 
