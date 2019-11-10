@@ -1,5 +1,6 @@
 ##### This module includes tools to process real GW d`ata to turn it into a format NNETFIX can work with. This includes bandpassing, cleaning spectral lines and cropping to NNETFIX's default length. ##########
 
+from __future__ import division
 import numpy as np
 import sys
 #GWPy
@@ -13,6 +14,8 @@ from pycbc.noise.reproduceable import noise_from_string
 from pycbc.filter import sigma, resample_to_delta_t, highpass, lowpass_fir, notch_fir, highpass_fir
 from pycbc.frame import read_frame, write_frame
 from pycbc.psd import welch, interpolate
+from pycbc.types.timeseries import TimeSeries as PycbcTimeSeries
+
 from nnetfix import params
 from ligotimegps import LIGOTimeGPS
 from scipy.interpolate import interp1d
@@ -58,6 +61,16 @@ def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.
         return GW_whit_strain, whiten_psd
     else:
         return GW_whit_strain
+
+def recolor_np_array(np_timeseries, pycbc_psd, sample_rate, recolor_option = "gwpy"):
+    if recolor_option.lower() == 'gwpy':
+        gwpy_timeseries = TimeSeries(np_timeseries, sample_rate = sample_rate)
+        recolored_timeseries = recolor_gwpy_timeseries(gwpy_timeseries, pycbc_psd)
+    elif recolor_option.lower() == 'pycbc':
+        delta_t = 1/sample_rate
+        pycbc_timeseries = PycbcTimeSeries(np_timeseries, delta_t = delta_t)
+        recolored_timeseries = recolor_pycbc_timeseries(pycbc_timeseries, pycbc_psd)
+    return recolored_timeseries
 
 def recolor_gwpy_timeseries(whitened_gwpy_timeseries, pycbc_psd):
     """This method reproduced from code from Kentaro Mogushi with permission"""
