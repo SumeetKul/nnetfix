@@ -59,7 +59,7 @@ def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.
     else:
         return GW_whit_strain
 
-def recolor_gwpy_timeseries(pycbc_psd, whitened_gwpy_timeseries):
+def recolor_gwpy_timeseries(whitened_gwpy_timeseries, pycbc_psd):
     """This method reproduced from code from Kentaro Mogushi with permission"""
 
     # Make PSD
@@ -76,7 +76,7 @@ def recolor_gwpy_timeseries(pycbc_psd, whitened_gwpy_timeseries):
     recolored_timeseries = recolored_fft.ifft()
     return recolored_timeseries
 
-def recolor_pycbc_timeseries(pycbc_psd, whitened_pycbc_timeseries):
+def recolor_pycbc_timeseries(whitened_pycbc_timeseries, pycbc_psd):
     """This method reproduced from code from Kentaro Mogushi with permission"""
     
     # Make PSD
