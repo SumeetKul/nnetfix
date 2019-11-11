@@ -62,6 +62,19 @@ def load_data(IFO, tag=params.tag, gpstime=params.gpstime, sample_rate = params.
     else:
         return GW_whit_strain
 
+def whiten_data(pycbc_timeseries, crop_length = 2):
+    # Calculate the noise spectrum (From the SAME segment)
+
+    psd = interpolate(welch(pycbc_timeseries), 1.0 / pycbc_timeseries.duration)
+
+    # whiten the data using this psd
+    white_strain = (pycbc_timeseries.to_frequencyseries() / psd ** 0.5).to_timeseries()
+
+    crop_strain = white_strain.crop(crop_length,crop_length) #crop length in seconds
+
+    return crop_strain 
+
+
 def recolor_np_array(np_timeseries, pycbc_psd, sample_rate, recolor_option = "gwpy"):
     if recolor_option.lower() == 'gwpy':
         gwpy_timeseries = TimeSeries(np_timeseries, sample_rate = sample_rate)
