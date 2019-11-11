@@ -30,6 +30,7 @@ mass2_max = 35.0
 ### 2: Generating the Training set 
 
 open_data = True
+save_testing_set = False
 
 apx = "IMRPhenomPv2"
 snr_range = (8,45)
