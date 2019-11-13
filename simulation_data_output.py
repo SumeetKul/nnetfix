@@ -69,8 +69,13 @@ for i in range(n_injections):
 
     for ifo in ["L1", "H1"]:
     
+        declination = np.random.uniform(-np.pi/2,np.pi/2)
+        right_ascension = np.random.uniform(0,2*np.pi)
+        polarization = np.random.uniform(0,2*np.pi)
+
         #testseg, inj_arr = mk_inj.inject_signal(m1, m2, snr, 'L1')
-        testseg, inj_arr = mk_inj.inject_signal(m1, m2, snr, ifo)
+        #testseg, inj_arr = mk_inj.inject_signal(m1, m2, snr, ifo)
+        testseg, inj_arr = mk_inj.inject_signal(m1, m2, snr, ifo, right_ascension, declination, polarization)
     
         inj_param_array[ifo][i] = [i, m1, m2] + inj_arr
         X_testdata_full, X_testdata, y_testglitch = mlp.process_dataframe(testseg, scaler)

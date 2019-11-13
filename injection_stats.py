@@ -53,7 +53,11 @@ for i in range(n_injections):
 #    m2 = np.round(np.random.uniform(mass2[0],mass2[1]),2)
     snr = np.round(np.random.uniform(snr_range[0],snr_range[1]),2)
     
-    testseg, inj_arr = mk_inj.inject_signal(m1, m2, snr, 'L1')
+    declination = np.random.uniform(-np.pi/2,np.pi/2)
+    right_ascension = np.random.uniform(0,2*np.pi)
+    polarization = np.random.uniform(0,2*np.pi)
+
+    testseg, inj_arr = mk_inj.inject_signal(m1, m2, snr, 'L1', right_ascension, declination, polarization)
     
     inj_param_array[i] = [i, m1, m2] + inj_arr
     X_testdata_full, X_testdata, y_testglitch = mlp.process_dataframe(testseg, scaler)

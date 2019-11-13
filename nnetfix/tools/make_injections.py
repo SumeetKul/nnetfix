@@ -10,7 +10,8 @@ from pycbc.detector import Detector
 from gwpy.timeseries import TimeSeries
 from nnetfix import params
 
-def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.duration, sample_rate = params.sample_rate, apx = params.apx, f_lower = params.f_lower):
+#def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.duration, sample_rate = params.sample_rate, apx = params.apx, f_lower = params.f_lower):
+def inject_signal(m1, m2, snr, IFO, right_ascension, declination, polarization, end_time = params.gpstime, dur = params.duration, sample_rate = params.sample_rate, apx = params.apx, f_lower = params.f_lower):
 
     """
     Injects a signal into a given interferometer having given component masses using aLIGO coloured noise. The extrinsic parameters, viz. sky localization, phase and polarization            are randomized. The merger time is set at 3.0 seconds before the end of the data segment.
@@ -33,9 +34,9 @@ def inject_signal(m1, m2, snr, IFO, end_time = params.gpstime, dur = params.dura
 
     toa = 7.7
 
-    declination = np.random.uniform(-np.pi/2,np.pi/2)
-    right_ascension = np.random.uniform(0,2*np.pi)
-    polarization = np.random.uniform(0,2*np.pi)
+    #declination = np.random.uniform(-np.pi/2,np.pi/2)
+    #right_ascension = np.random.uniform(0,2*np.pi)
+    #polarization = np.random.uniform(0,2*np.pi)
 
 
     signal = detector.project_wave(hp, hc, right_ascension, declination, polarization)
