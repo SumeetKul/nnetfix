@@ -123,7 +123,7 @@ def split_trainingset(X_data, y_glitch, split_fraction=0.3, sample_rate = params
 
 
 
-def NNetfit(X_train,y_train,hidden_layer_sizes=(300,)):
+def NNetfit(X_train,y_train,hidden_layer_sizes=params.NN_sizes):
 
     """
     """

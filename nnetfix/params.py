@@ -32,6 +32,9 @@ mass2_max = 35.0
 open_data = True
 save_testing_set = False
 
+#NN_sizes = (300,)
+NN_sizes = (200,)
+
 apx = "IMRPhenomPv2"
 snr_range = (8,45)
 minimal_match = 0.99
