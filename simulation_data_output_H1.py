@@ -14,6 +14,14 @@ from nnetfix.tools import metrics, process_data
 from nnetfix import mlp
 from nnetfix import params
 
+# Create directory to save data:
+base_dir = "simulation_data_output"
+data_sub_dir = "tbm_{0}ms_dur_{1}ms".format(int(params.glitch_tbm*1000), int(params.glitch_dur * 1000))
+data_dir = os.path.join(base_dir, "injections", params.label, data_sub_dir)
+#os.makedirs(data_dir, exists_ok = True)
+if not os.path.isdir(data_dir):
+    os.makedirs(data_dir)
+
 snr_json_filename = os.path.join(data_dir, "snr.json")
 
 with open(snr_json_filename, "r") as infile:
@@ -23,7 +31,7 @@ with open(snr_json_filename, "r") as infile:
 
 #n_injections = 50 # Number of injections
 #n_injections = 5 # Number of injections
-n_injections = snr_json["n_injections" # Number of injections
+n_injections = snr_json["n_injections"] # Number of injections
 #mass1 = (34,36) # Small interval around actual mass value
 #mass2 = (28,30)
 #mass1 = 35
@@ -32,14 +40,6 @@ n_injections = snr_json["n_injections" # Number of injections
 mass1 = snr_json["mass1"]
 mass2 = snr_json["mass2"]
 snr_range = snr_json["snr_range"]
-
-# Create directory to save data:
-base_dir = "simulation_data_output"
-data_sub_dir = "tbm_{0}ms_dur_{1}ms".format(int(params.glitch_tbm*1000), int(params.glitch_dur * 1000))
-data_dir = os.path.join(base_dir, "injections", params.label, data_sub_dir)
-#os.makedirs(data_dir, exists_ok = True)
-if not os.path.isdir(data_dir):
-    os.makedirs(data_dir)
 
 # Model name:
 model_name = "model_{}.pkl".format(params.label)
