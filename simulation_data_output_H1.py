@@ -57,8 +57,7 @@ chisq_array = np.zeros((n_injections, 4))
 #ifo = "L1"
 ifo = "H1"
 
-#for i in range(n_injections):
-for i in range(1):
+for i in range(n_injections):
 
     m1 = mass1
     m2 = mass2
