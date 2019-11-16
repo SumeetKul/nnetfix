@@ -1,0 +1,15 @@
+future
+dynesty
+corner
+numpy<1.15.3,>=1.13.0
+matplotlib>=2.0
+scipy>=0.16
+pandas
+deepdish
+mock
+h5py==2.7.1
+gwpy
+lalsuite
+htcondor
+scikit-learn
+astropy
