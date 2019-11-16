@@ -37,8 +37,26 @@ for i in range(n_injections):
     snr = np.round(np.random.uniform(snr_range[0],snr_range[1]),2)
     output_json["snrs"] += [snr]
     output_json["RAs"] += [np.random.uniform(0,2*np.pi)]
-    output_json["declinations"] += [np.random.uniform(-np.pi/2,np.pi/2)]
+    #output_json["declinations"] += [np.random.uniform(-np.pi/2,np.pi/2)]
     output_json["polarizations"] += [np.random.uniform(0,2*np.pi)]
+
+    """
+    #cos_dec = np.random.uniform(-1, 1)
+    cos_dec = np.random.uniform(0, 1)
+    dec = np.arccos(cos_dec)
+    #if dec > 
+    if np.random.randint(0,2) == 1:
+        dec = -1 * dec
+    output_json["declinations"] += [dec]
+    """
+
+    cos_dec = np.random.uniform(-1, 1)
+    dec = np.arccos(cos_dec)
+    if dec == np.pi:
+        dec = -np.pi/2
+    if dec > np.pi/2:
+        dec -= np.pi
+    output_json["declinations"] += [dec]
 
 output_filename = os.path.join(data_dir, "snr.json")
 
