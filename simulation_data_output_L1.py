@@ -16,6 +16,7 @@ from nnetfix import params
 
 # Create directory to save data:
 base_dir = "simulation_data_output"
+#base_dir = "simulation_data_output_direction_test"
 data_sub_dir = "tbm_{0}ms_dur_{1}ms".format(int(params.glitch_tbm*1000), int(params.glitch_dur * 1000))
 data_dir = os.path.join(base_dir, "injections", params.label, data_sub_dir)
 #os.makedirs(data_dir, exists_ok = True)
@@ -29,14 +30,7 @@ with open(snr_json_filename, "r") as infile:
 
 # Parameters for Injections:
 
-#n_injections = 50 # Number of injections
-#n_injections = 5 # Number of injections
 n_injections = snr_json["n_injections"] # Number of injections
-#mass1 = (34,36) # Small interval around actual mass value
-#mass2 = (28,30)
-#mass1 = 35
-#mass2 = 29
-#snr_range = (8,25)
 mass1 = snr_json["mass1"]
 mass2 = snr_json["mass2"]
 snr_range = snr_json["snr_range"]
@@ -104,8 +98,14 @@ for i in range(n_injections):
     np.savetxt(os.path.abspath(os.path.join(data_dir, "original_{0}_{1}.txt".format(i, ifo))),OriginalData)
 
 np.savetxt(os.path.abspath(os.path.join(data_dir, "Inj_snr_" + ifo + ".csv")),SNR_array, fmt='%1.3f',delimiter=',',header="Index, Original, Gated, Reconstructed")
+with open(os.path.abspath(os.path.join(data_dir, "Inj_snr_" + ifo + ".json")), "w") as outfile:
+    json.dump({"SNR_info": list(SNR_array)}, outfile, indent = 4, sort_keys = True)
 np.savetxt(os.path.abspath(os.path.join(data_dir, "Inj_chisq_" + ifo + ".csv")),chisq_array,fmt='%1.3f',delimiter=',',header="Index, Original, Gated, Reconstructed")
+with open(os.path.abspath(os.path.join(data_dir, "Inj_chisq_" + ifo + ".json")), "w") as outfile:
+    json.dump({"chisq_info": list(chisq_array)}, outfile, indent = 4, sort_keys = True)
 np.savetxt(os.path.abspath(os.path.join(data_dir, "Inj_params_" + ifo + ".csv")),inj_param_array,fmt='%1.3f',delimiter=',',header="Index, mass1, mass2, RA, DEC, Polarization, SNR")
+with open(os.path.abspath(os.path.join(data_dir, "Inj_params_" + ifo + ".json")), "w") as outfile:
+    json.dump({"injection_parameters": list(inj_param_array)}, outfile, indent = 4, sort_keys = True)
 
 ################################################
 

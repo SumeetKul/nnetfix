@@ -9,12 +9,12 @@ from nnetfix import params
 # Parameters for Injections:
 
 #n_injections = 50 # Number of injections
-n_injections = 15 # Number of injections
+n_injections = 25 # Number of injections
 #mass1 = (34,36) # Small interval around actual mass value
 #mass2 = (28,30)
 mass1 = 35
 mass2 = 29
-snr_range = (15,25)
+snr_range = (8,25)
 
 # Create directory to save data:
 base_dir = "simulation_data_output"
