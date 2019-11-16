@@ -57,7 +57,8 @@ chisq_array = np.zeros((n_injections, 4))
 #ifo = "L1"
 ifo = "H1"
 
-for i in range(n_injections):
+#for i in range(n_injections):
+for i in range(1):
 
     m1 = mass1
     m2 = mass2
@@ -98,13 +99,13 @@ for i in range(n_injections):
 
 np.savetxt(os.path.abspath(os.path.join(data_dir, "Inj_snr_" + ifo + ".csv")),SNR_array, fmt='%1.3f',delimiter=',',header="Index, Original, Gated, Reconstructed")
 with open(os.path.abspath(os.path.join(data_dir, "Inj_snr_" + ifo + ".json")), "w") as outfile:
-    json.dump({"SNR_info": list(SNR_array)}, outfile, indent = 4, sort_keys = True)
+    json.dump({"SNR_info": SNR_array.tolist()}, outfile, indent = 4, sort_keys = True)
 np.savetxt(os.path.abspath(os.path.join(data_dir, "Inj_chisq_" + ifo + ".csv")),chisq_array,fmt='%1.3f',delimiter=',',header="Index, Original, Gated, Reconstructed")
 with open(os.path.abspath(os.path.join(data_dir, "Inj_chisq_" + ifo + ".json")), "w") as outfile:
-    json.dump({"chisq_info": list(chisq_array)}, outfile, indent = 4, sort_keys = True)
+    json.dump({"chisq_info": chisq_array.tolist()}, outfile, indent = 4, sort_keys = True)
 np.savetxt(os.path.abspath(os.path.join(data_dir, "Inj_params_" + ifo + ".csv")),inj_param_array,fmt='%1.3f',delimiter=',',header="Index, mass1, mass2, RA, DEC, Polarization, SNR")
 with open(os.path.abspath(os.path.join(data_dir, "Inj_params_" + ifo + ".json")), "w") as outfile:
-    json.dump({"injection_parameters": list(inj_param_array)}, outfile, indent = 4, sort_keys = True)
+    json.dump({"injection_parameters": inj_param_array.tolist()}, outfile, indent = 4, sort_keys = True)
 
 ################################################
 
