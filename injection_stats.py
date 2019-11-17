@@ -12,7 +12,7 @@ from astropy.table import Table
 
 # Parameters for Injections:
 
-n_injections = 50 # Number of injections
+n_injections = 500 # Number of injections
 #mass1 = (34,36) # Small interval around actual mass value
 #mass2 = (28,30)
 mass1 = 35
@@ -53,9 +53,18 @@ for i in range(n_injections):
 #    m2 = np.round(np.random.uniform(mass2[0],mass2[1]),2)
     snr = np.round(np.random.uniform(snr_range[0],snr_range[1]),2)
     
-    declination = np.random.uniform(-np.pi/2,np.pi/2)
+    #declination = np.random.uniform(-np.pi/2,np.pi/2)
     right_ascension = np.random.uniform(0,2*np.pi)
     polarization = np.random.uniform(0,2*np.pi)
+
+    cos_dec = np.random.uniform(-1, 1)
+    dec = np.arccos(cos_dec)
+    if dec == np.pi:
+        dec = -np.pi/2
+    if dec > np.pi/2:
+        dec -= np.pi
+    declination = dec
+    #output_json["declinations"] += [dec]
 
     testseg, inj_arr = mk_inj.inject_signal(m1, m2, snr, 'L1', right_ascension, declination, polarization)
     
@@ -68,7 +77,7 @@ for i in range(n_injections):
     
     
     snr_orig, snrp_orig, snrp_loc_orig = metrics.calculate_snr(OriginalData, m1, m2)
-        snr, snrp, snrp_loc = metrics.calculate_snr(testseg, m1, m2)
+    snr, snrp, snrp_loc = metrics.calculate_snr(testseg, m1, m2)
     snr_cut, snrp_cut, snrp_loc_cut = metrics.calculate_snr(CutData, m1, m2)
     snr_pred, snrp_pred, snrp_loc_pred = metrics.calculate_snr(PredictData, m1, m2)
 
