@@ -70,25 +70,25 @@ def vectornorm(v):
 
 def load_dataset(hdf5_file):
     try:
-	f = h5py.File(os.path.join(os.path.abspath('datasets/'),hdf5_file),'r')
-	keys = f.keys()
-	# Load dataset as a numpy array:
-	Main_Training_dataset = f[keys[0]][:]
+        f = h5py.File(os.path.join(os.path.abspath('datasets/'),hdf5_file),'r')
+        keys = f.keys()
+        # Load dataset as a numpy array:
+        Main_Training_dataset = f[keys[0]][:]
 
-	#Close hdf5
-	f.close()
+        #Close hdf5
+        f.close()
 
-	return Main_Training_dataset
+        return Main_Training_dataset
 
     except NameError:
-	print("The Training dataset does not exist as the given hdf5 filename")
+        print("The Training dataset does not exist as the given hdf5 filename")
 
 
 
 
 
 
-	#def _make_executable(filename, outdir=params.outdir):
+    #def _make_executable(filename, outdir=params.outdir):
 
 #    """ Make scripts executable to run using Condor.
 #    filename: name of the script
