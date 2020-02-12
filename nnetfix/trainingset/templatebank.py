@@ -97,7 +97,8 @@ def generate_tbank(label,m1_min,m1_max,m2_min,m2_max,match):
     
 
     cl_list.append('--verbose')
-    cl_list.append('--psd-model aLIGOZeroDetHighPower')
+    #cl_list.append('--psd-model aLIGOZeroDetHighPower')
+    cl_list.append('--psd-model aLIGOZeroDetLowPower')
     cl_list.append('--output-file {}'.format(output_cache_file))
 
     cl = ' '.join(cl_list)
