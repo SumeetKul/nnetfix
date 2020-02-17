@@ -11,6 +11,8 @@ import datetime
 import h5py
 import pickle
 
+run_commandline("mkdir models/{}".format(params.label))
+
 print(datetime.datetime.now().time())
 print(params.label)
 
