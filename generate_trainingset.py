@@ -17,9 +17,11 @@ from pycbc.frame import write_frame
 ###########################################################################################################################################################################
 ###################################### Define function to simulate data ###################################################################################################
 
-def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx, f_lower = params.f_lower, dur = params.duration, snr_range = params.snr_range, sample_rate = params.sample_rate):
+#def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx, f_lower = params.f_lower, dur = params.duration, snr_range = params.snr_range, sample_rate = params.sample_rate):
+def simulate_single_data_segment(m1, m2, index, IFO, apx, f_lower, dur, snr_range, sample_rate, noise_multiplier, trigger_time, toa_error):
     
-    waveform_arr = np.zeros((params.multiplier,int(sample_rate*dur)))
+    #waveform_arr = np.zeros((params.multiplier,int(sample_rate*dur)))
+    waveform_arr = np.zeros((noise_multiplier,int(sample_rate*dur)))
 
     data_duration = dur + 1
 #    for i in range(params.multiplier):
@@ -37,7 +39,8 @@ def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx
 #    hp.start_time += end_time
 #    hc.start_time += end_time
 
-    for i in range(params.multiplier):
+    #for i in range(params.multiplier):
+    for i in range(noise_multiplier):
 
         if m1 == 0.0 and m2 == 0.0:
 
@@ -49,7 +52,8 @@ def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx
             
             # Whiten and bandpass:
             ts = ts.whiten(1,1)
-            ts = highpass(ts, params.f_lower)
+            #ts = highpass(ts, params.f_lower)
+            ts = highpass(ts, f_lower)
             #ts = lowpass_fir(ts,800,512)
             waveform_arr[i] = ts
 
@@ -65,14 +69,16 @@ def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx
                      delta_t=1.0/sample_rate,
                      f_lower=f_lower)
 
-            end_time = params.gpstime + 3.5
+            #end_time = params.gpstime + 3.5
+            end_time = trigger_time + 3.5
 
             hp.start_time += end_time
             hc.start_time += end_time
 
         
             snr = np.random.randint(snr_range[0],snr_range[1])
-            toa = np.around(np.random.uniform(7.7-params.toa_err, 7.7+params.toa_err),3)
+            #toa = np.around(np.random.uniform(7.7-params.toa_err, 7.7+params.toa_err),3)
+            toa = np.around(np.random.uniform(7.7-toa_error, 7.7+toa_error),3)
 
             #declination = np.random.uniform(-np.pi/2,np.pi/2)
             right_ascension = np.random.uniform(0,2*np.pi)
@@ -112,7 +118,7 @@ def simulate_single_data_segment(m1,m2,index, IFO = params.IFO, apx = params.apx
 
             # Whiten and high-pass:
             dataseg = dataseg.whiten(1,1)
-            dataseg = highpass(dataseg, params.f_lower)
+            dataseg = highpass(dataseg, f_lower)
             #dataseg = lowpass_fir(dataseg, 800, 512) 
             waveform_arr[i] = dataseg
              
@@ -137,7 +143,8 @@ mass1 = masses[index][0]
 mass2 = masses[index][1]
 
 
-waveform_array = simulate_single_data_segment(mass1,mass2,index)
+#waveform_array = simulate_single_data_segment(mass1,mass2,index)
+waveform_array = simulate_single_data_segment(mass1, mass2,index, IFO = params.IFO, apx = params.apx, f_lower = params.f_lower, dur = params.duration, snr_range = params.snr_range, sample_rate = params.sample_rate, noise_multiplier = params.multiplier, trigger_time = params.gpstime, toa_error = params.toa_err)
 
 
 hdf5_filename = "trainingset_{}.hdf5".format(params.label)
