@@ -16,4 +16,4 @@ txt_filename = tsutils._xml_to_txt(xml_filename,params.label)
 
 n_templates = tsutils.make_hdf5(txt_filename)
 
-tsutils.write_condor_submit_file("generate_trainingset.py",n_templates)
+tsutils.write_condor_submit_file("generate_trainingset_new.py",n_templates)
